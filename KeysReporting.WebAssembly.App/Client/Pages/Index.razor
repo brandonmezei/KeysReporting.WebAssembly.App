@@ -3,7 +3,7 @@
 
 <PageTitle>Keys360 Reporting</PageTitle>
 
-<ErrorMessage Message="@_message" />
+<ErrorMessage Message="@_errorMessage" />
 
 <EditForm Model="_userLogin" OnValidSubmit="HandleLogin">
     <DataAnnotationsValidator />
@@ -26,18 +26,18 @@
 @code
 {
     private UserLoginDto _userLogin = new ();
-    private string _message;
+    private string? _errorMessage;
 
     private async Task HandleLogin()
     {
         try
         {
             if (!await authService.LogIn(_userLogin))
-                _message = Static.Messages.LoginError;
+                _errorMessage = Static.Messages.LoginError;
         }
         catch(Exception ex)
         {
-            _message = ex.Message;
+            _errorMessage = ex.Message;
         }
     }
 }

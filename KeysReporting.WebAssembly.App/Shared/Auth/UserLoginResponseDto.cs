@@ -8,6 +8,6 @@ namespace KeysReporting.WebAssembly.App.Shared.Auth
 {
     public class UserLoginResponseDto
     {
-        public string? token { get; set; }
+        public string? Token { get; set; }
     }
 }

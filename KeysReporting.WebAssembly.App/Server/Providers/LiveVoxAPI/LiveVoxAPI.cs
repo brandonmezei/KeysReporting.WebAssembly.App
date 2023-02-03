@@ -22,7 +22,7 @@ namespace KeysReporting.WebAssembly.App.Server.Providers.LiveVoxAPI
 
         private readonly string? _apiLink;
         private readonly string? _AccessToken;
-        private readonly JsonSerializerOptions _jsonSetting = new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+        private readonly JsonSerializerOptions _jsonSetting = new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNameCaseInsensitive = true };
 
         public LiveVoxAPI(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
@@ -87,10 +87,10 @@ namespace KeysReporting.WebAssembly.App.Server.Providers.LiveVoxAPI
                     signingCredentials: credentials
                 );
 
-                return new UserLoginResponseDto { token = new JwtSecurityTokenHandler().WriteToken(newToken) };
+                return new UserLoginResponseDto { Token = new JwtSecurityTokenHandler().WriteToken(newToken) };
             }
 
-            return new UserLoginResponseDto { token = string.Empty };
+            return new UserLoginResponseDto { Token = string.Empty };
         }
     }
 }

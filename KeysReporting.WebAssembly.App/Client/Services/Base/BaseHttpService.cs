@@ -13,6 +13,8 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Base
         private readonly HttpClient _client;
         private readonly ILocalStorageService _localStorage;
         private readonly IWebAssemblyHostEnvironment _hostEnvironment;
+        private readonly JsonSerializerOptions _jsonSetting = new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNameCaseInsensitive = true };
+
 
         public BaseHttpService(ILocalStorageService localStorage, IWebAssemblyHostEnvironment hostEnvironment)
         {
@@ -30,14 +32,14 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Base
 #if DEBUG
                 var jsonContent = JsonSerializer.Serialize(contentPayload);
 #endif
-                request.Content = new StringContent(JsonSerializer.Serialize(contentPayload), Encoding.UTF8, "application/json");
+                request.Content = new StringContent(JsonSerializer.Serialize(contentPayload, _jsonSetting), Encoding.UTF8, "application/json");
             }
 
             var response = await _client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
-                return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
+                return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), _jsonSetting);
             }
             else
             {

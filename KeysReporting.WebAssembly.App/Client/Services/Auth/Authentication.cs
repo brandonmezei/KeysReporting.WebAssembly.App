@@ -20,9 +20,9 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Auth
         {
             var response = await SendRequest<UserLoginResponseDto>("Api/Authentication", HttpMethod.Post, userLoginDto);
 
-            await _localStorage.SetItemAsync("AccessToken", response.token);
+            await _localStorage.SetItemAsync("AccessToken", response.Token);
 
-            return !string.IsNullOrEmpty(response.token);
+            return !string.IsNullOrEmpty(response.Token);
         }
     }
 }
