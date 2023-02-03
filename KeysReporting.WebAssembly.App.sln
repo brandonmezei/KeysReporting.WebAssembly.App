@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeysReporting.WebAssembly.App.Server", "KeysReporting.WebAssembly.App\Server\KeysReporting.WebAssembly.App.Server.csproj", "{7E29F352-5601-4C8D-A4F0-DE9F26E84C67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeysReporting.WebAssembly.App.Server", "KeysReporting.WebAssembly.App\Server\KeysReporting.WebAssembly.App.Server.csproj", "{7E29F352-5601-4C8D-A4F0-DE9F26E84C67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeysReporting.WebAssembly.App.Client", "KeysReporting.WebAssembly.App\Client\KeysReporting.WebAssembly.App.Client.csproj", "{FFB214AD-C667-437C-8E3F-50B372741767}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeysReporting.WebAssembly.App.Client", "KeysReporting.WebAssembly.App\Client\KeysReporting.WebAssembly.App.Client.csproj", "{FFB214AD-C667-437C-8E3F-50B372741767}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeysReporting.WebAssembly.App.Shared", "KeysReporting.WebAssembly.App\Shared\KeysReporting.WebAssembly.App.Shared.csproj", "{45EC6F7B-794B-40F7-AFC4-90E1B8EF96B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeysReporting.WebAssembly.App.Shared", "KeysReporting.WebAssembly.App\Shared\KeysReporting.WebAssembly.App.Shared.csproj", "{45EC6F7B-794B-40F7-AFC4-90E1B8EF96B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,43 +1,41 @@
 ﻿@page "/"
-@inject IAuthentication authService
 
 <PageTitle>Keys360 Reporting</PageTitle>
 
+<PageDisplayTitle Title="Keys 360 Reporting" Sub="Please enter credentials below. All fields are case sensitive." />
 <ErrorMessage Message="@_errorMessage" />
 
-<EditForm Model="_userLogin" OnValidSubmit="HandleLogin">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-      <div class="form-group">
-            <label for="username">User</label>
-        <InputText class="form-control" @bind-Value="_userLogin.userName" />
-        <ValidationMessage For="@(() => _userLogin.userName)" />
+<section class="section">
+<div class="columns is-centered">
+    <div class="column is-4">
+        <div class="tile is-ancestor">
+            <div class="tile is-parent">
+                <div class="tile is-child box">
+                    <p class="title">Log On</p>
+                    <EditForm Model="_userLogin" OnValidSubmit="HandleLogin">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="field">
+                            <label for="username" class="heading">User</label>
+                            <div class="control">
+                                <InputText class="input is-danger" @bind-Value="_userLogin.userName" />
+                                <ValidationMessage For="@(() => _userLogin.userName)" />
+                            </div>   
+                        </div>
+                        <div class="field">
+                            <label for="password" class="heading">Password</label>
+                            <div class="control">
+                                <InputText class="input is-danger" type="password" @bind-Value="_userLogin.password" />
+                                <ValidationMessage For="@(() => _userLogin.password)" />
+                            </div>   
+                        </div>
+                        <hr />
+                        <button type="submit" class="button is-primary">Login</button>
+                    </EditForm>
+                </div>
+            </div>
         </div>
-        <br />
-        <div class="form-group">
-            <label for="Password">Password</label>
-            <InputText class="form-control" type="password" @bind-Value="_userLogin.password" />
-        <ValidationMessage For="@(() => _userLogin.password)" />
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary"> Login </button>
-</EditForm>
+    </div>
+</div>
+</section>
 
-@code
-{
-    private UserLoginDto _userLogin = new ();
-    private string? _errorMessage;
-
-    private async Task HandleLogin()
-    {
-        try
-        {
-            if (!await authService.LogIn(_userLogin))
-                _errorMessage = Static.Messages.LoginError;
-        }
-        catch(Exception ex)
-        {
-            _errorMessage = ex.Message;
-        }
-    }
-}

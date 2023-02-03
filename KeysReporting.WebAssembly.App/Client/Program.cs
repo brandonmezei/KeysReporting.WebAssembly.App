@@ -1,7 +1,9 @@
 using Blazored.LocalStorage;
 using KeysReporting.WebAssembly.App.Client;
+using KeysReporting.WebAssembly.App.Client.Providers;
 using KeysReporting.WebAssembly.App.Client.Services.Auth;
 using KeysReporting.WebAssembly.App.Client.Services.Base;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -12,6 +14,14 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddBlazoredLocalStorage();
+
+//Auth
+builder.Services.AddScoped<ApiAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(p =>
+    p.GetRequiredService<ApiAuthenticationStateProvider>()
+);
+
+builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped<IAuthentication, Authentication>();
 

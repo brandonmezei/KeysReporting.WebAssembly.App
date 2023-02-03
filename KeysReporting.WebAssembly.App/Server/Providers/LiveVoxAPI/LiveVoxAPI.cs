@@ -55,7 +55,7 @@ namespace KeysReporting.WebAssembly.App.Server.Providers.LiveVoxAPI
 
             if (response.IsSuccessStatusCode)
             {
-                return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
+                return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), _jsonSetting);
             }
             else
             {

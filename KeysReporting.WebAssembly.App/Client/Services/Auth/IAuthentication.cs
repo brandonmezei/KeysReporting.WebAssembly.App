@@ -5,5 +5,7 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Auth
     public interface IAuthentication
     {
         Task<bool> LogIn(UserLoginDto userLoginDto);
+        Task Logout();
+        Task<bool> CheckLogin();
     }
 }

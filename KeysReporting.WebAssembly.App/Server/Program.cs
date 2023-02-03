@@ -1,6 +1,8 @@
+using KeysReporting.WebAssembly.App.Client.Providers;
 using KeysReporting.WebAssembly.App.Server.Data;
 using KeysReporting.WebAssembly.App.Server.Providers;
 using KeysReporting.WebAssembly.App.Server.Providers.LiveVoxAPI;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,9 +1,62 @@
-﻿<nav class="navbar navbar-light bg-light justify-content-between">
-    <a class="navbar-brand" href="#">
-        <img src="/images/KeysLogo.png" width="30" height="30" alt="Keys360 Reporting" style="height:60px;width:100px;">
-    </a>
-    <form class="form-inline">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
+﻿<nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a href="/"><img src="images/KeysLogo.png" alt="Keys360 Reporting" style="height:60px;width:100px;"></a>
+        </div>
+        <AuthorizeView>
+            <Authorized>
+            <div id="navbar" class="navbar-menu">
+                <div class="navbar-start">
+                    <div class="navbar-item"></div>
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link">
+                            Reports
+                        </a>
+                        <div class="navbar-dropdown">
+                            @*<a href="@Url.Action("ActiveCampaigns", "Reports", new { firstLoad = true })" class="navbar-item">
+                            Active Campaign
+                            </a>*@
+                            <a href="" class="navbar-item">
+                                Agent Report
+                            </a>
+                            <a href="" class="navbar-item">
+                                Calls Per Hour Report
+                            </a>
+                            @*<a href="@Url.Action("BillingReport", "Reports", new { firstLoad = true })" class="navbar-item">
+                            Billing Report
+                            </a>*@
+                        </div>
+                    </div>
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link">
+                            Corrections
+                        </a>
+                        <div class="navbar-dropdown">
+                            <a href="" class="navbar-item">
+                                Term Codes
+                            </a>
+                            <a href="" class="navbar-item">
+                                Api Errors
+                            </a>
+                            <a href="" class="navbar-item">
+                                DNC Phone
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="navbar-end">
+
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link">
+                            LiveVox User ID: @context?.User?.Identity?.Name
+                        </a>
+                        <div class="navbar-dropdown">
+                            <a class="navbar-item" @onclick="SignOut">
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </Authorized>
+        </AuthorizeView>
 </nav>
