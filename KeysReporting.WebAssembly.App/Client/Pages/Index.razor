@@ -1,0 +1,43 @@
+﻿@page "/"
+@inject IAuthentication authService
+
+<PageTitle>Keys360 Reporting</PageTitle>
+
+<ErrorMessage Message="@_message" />
+
+<EditForm Model="_userLogin" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+      <div class="form-group">
+            <label for="username">User</label>
+        <InputText class="form-control" @bind-Value="_userLogin.userName" />
+        <ValidationMessage For="@(() => _userLogin.userName)" />
+        </div>
+        <br />
+        <div class="form-group">
+            <label for="Password">Password</label>
+            <InputText class="form-control" type="password" @bind-Value="_userLogin.password" />
+        <ValidationMessage For="@(() => _userLogin.password)" />
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary"> Login </button>
+</EditForm>
+
+@code
+{
+    private UserLoginDto _userLogin = new ();
+    private string _message;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            if (!await authService.LogIn(_userLogin))
+                _message = Static.Messages.LoginError;
+        }
+        catch(Exception ex)
+        {
+            _message = ex.Message;
+        }
+    }
+}
