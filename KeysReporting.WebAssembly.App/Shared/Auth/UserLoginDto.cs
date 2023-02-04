@@ -9,9 +9,12 @@ namespace KeysReporting.WebAssembly.App.Shared.Auth
 {
     public  class UserLoginDto
     {
+        private string? _username;
+
         public string? clientName { get; set; } = "KEYS";
+        
         [Required]
-        public string? userName { get; set; }
+        public string? userName { get { return _username; } set { _username = value?.Trim().ToUpper(); } }
 
         [Required]
         public string? password { get; set; }

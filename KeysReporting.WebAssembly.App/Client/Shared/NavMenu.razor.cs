@@ -7,14 +7,14 @@ namespace KeysReporting.WebAssembly.App.Client.Shared
     {
 
         [Inject]
-        private IAuthentication AuthService { get; set; }
+        private IAuthentication _authService { get; set; }
 
         [Inject]
-        private NavigationManager NavManager { get; set; }
+        private NavigationManager _navManager { get; set; }
         private void SignOut()
         {
-            AuthService.Logout();
-            NavManager.NavigateTo("/");
+            _authService.Logout();
+            _navManager.NavigateTo("/");
         }
     }
 }

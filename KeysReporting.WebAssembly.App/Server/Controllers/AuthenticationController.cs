@@ -1,6 +1,7 @@
-﻿using KeysReporting.WebAssembly.App.Server.Providers.LiveVoxAPI;
+﻿using KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI;
 using KeysReporting.WebAssembly.App.Server.Static;
 using KeysReporting.WebAssembly.App.Shared.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -10,6 +11,7 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class AuthenticationController : ControllerBase
     {
         private readonly ILiveVoxAPI _liveVoxAPI;

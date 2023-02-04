@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Net;
 
-namespace KeysReporting.WebAssembly.App.Server.Providers
+namespace KeysReporting.WebAssembly.App.Server.Services
 {
     public class HttpFactoryWithProxy : IHttpClientFactory
     {

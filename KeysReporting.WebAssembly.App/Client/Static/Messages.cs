@@ -5,5 +5,6 @@
         public const string LoginError = "User cannot login.";
         public const string NotAuthorized = "You're not authorized to view this content.";
         public const string NothingAtAddress = "Sorry, there's nothing at this address.";
+        public const string NothingFound = "Sorry, nothing found for this report.";
     }
 }

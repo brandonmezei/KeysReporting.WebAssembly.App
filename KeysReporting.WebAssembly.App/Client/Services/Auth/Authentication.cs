@@ -22,8 +22,6 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Auth
         }
         public async Task<bool> LogIn(UserLoginDto userLoginDto)
         {
-            userLoginDto.userName = userLoginDto?.userName?.ToUpper();
-
             var response = await SendRequest<UserLoginResponseDto>("Api/Authentication", HttpMethod.Post, userLoginDto);
 
             if (response != null)

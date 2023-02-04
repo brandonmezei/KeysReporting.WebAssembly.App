@@ -1,4 +1,5 @@
 ﻿using KeysReporting.WebAssembly.App.Client.Services.Auth;
+using KeysReporting.WebAssembly.App.Client.Static;
 using KeysReporting.WebAssembly.App.Shared.Auth;
 using Microsoft.AspNetCore.Components;
 using System.Runtime.CompilerServices;
@@ -15,6 +16,7 @@ namespace KeysReporting.WebAssembly.App.Client.Pages
 
         private UserLoginDto _userLogin = new();
         private string? _errorMessage;
+        private string? _buttonClass;
 
         protected override async Task OnInitializedAsync()
         {
@@ -24,6 +26,8 @@ namespace KeysReporting.WebAssembly.App.Client.Pages
 
         private async Task HandleLogin()
         {
+            _buttonClass = CSSClasses.ButtonSpin;
+            
             try
             {
                 if (!await AuthService.LogIn(_userLogin))
@@ -35,6 +39,8 @@ namespace KeysReporting.WebAssembly.App.Client.Pages
             {
                 _errorMessage = ex.Message;
             }
+
+            _buttonClass = string.Empty;
         }
     }
 }

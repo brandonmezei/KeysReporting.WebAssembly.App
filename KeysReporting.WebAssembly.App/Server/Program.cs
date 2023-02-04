@@ -1,12 +1,13 @@
-using KeysReporting.WebAssembly.App.Client.Providers;
+using KeysReporting.WebAssembly.App.Server.Configurations;
 using KeysReporting.WebAssembly.App.Server.Data;
-using KeysReporting.WebAssembly.App.Server.Providers;
-using KeysReporting.WebAssembly.App.Server.Providers.LiveVoxAPI;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.ResponseCompression;
+using KeysReporting.WebAssembly.App.Server.Services;
+using KeysReporting.WebAssembly.App.Server.Services.CPHReport;
+using KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +26,39 @@ builder.Services.AddRazorPages();
 //Scope
 builder.Services.AddScoped<IHttpClientFactory, HttpFactoryWithProxy>();
 builder.Services.AddScoped<ILiveVoxAPI, LiveVoxAPI>();
+builder.Services.AddScoped<ICPHReport, CPHReport>();
+
+//Use for Mapper
+builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 //Use For Logging
 builder.Host.UseSerilog((ctx, lc) =>
     lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+
+//Use for Cors
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll",
+        b => b.AllowAnyMethod().
+        AllowAnyHeader().
+        AllowAnyOrigin());
+});
+
+//Use For Auth
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options => {
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
+    };
+});
 
 var app = builder.Build();
 
@@ -49,7 +79,12 @@ app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
+app.UseCors("AllowAll");
+
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 
 app.MapRazorPages();

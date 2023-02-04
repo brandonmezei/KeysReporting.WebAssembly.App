@@ -12,7 +12,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using KeysReporting.WebAssembly.App.Server.Static;
 
-namespace KeysReporting.WebAssembly.App.Server.Providers.LiveVoxAPI
+namespace KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI
 {
 
     public class LiveVoxAPI : ILiveVoxAPI
