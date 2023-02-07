@@ -5,6 +5,8 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using System.Linq.Expressions;
+using System;
 
 namespace KeysReporting.WebAssembly.App.Client.Services.Base
 {
@@ -15,7 +17,6 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Base
         private readonly IWebAssemblyHostEnvironment _hostEnvironment;
         private readonly JsonSerializerOptions _jsonSetting = new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNameCaseInsensitive = true };
 
-
         public BaseHttpService(ILocalStorageService localStorage, IWebAssemblyHostEnvironment hostEnvironment)
         {
             _client = new HttpClient();
@@ -23,9 +24,9 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Base
             _hostEnvironment = hostEnvironment;
         }
 
-        protected async Task<T> SendRequest<T>(string url, HttpMethod httpMethod, object contentPayload = null)
+        protected async Task<T> SendRequest<T>(string url, HttpMethod httpMethod, object contentPayload = null, string requestQuery = null)
         {
-            var request = new HttpRequestMessage(httpMethod, $"{_hostEnvironment.BaseAddress}{url}");
+            var request = new HttpRequestMessage(httpMethod, $"{_hostEnvironment.BaseAddress}{url}{requestQuery}");
 
             if (contentPayload != null)
             {

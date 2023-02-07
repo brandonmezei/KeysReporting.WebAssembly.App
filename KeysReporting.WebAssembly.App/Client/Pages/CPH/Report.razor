@@ -1,9 +1,194 @@
-﻿@page "/CPH/Report/{SearchDate}"
+﻿@page "/CPH/Report"
+@inject IJSRuntime js;
 
 <PageTitle>Keys360 Reporting - CPH Report</PageTitle>
+<PageDisplayTitle Title="CPH Report" Sub="Call Per Hour Report" />
 <ErrorMessage Message="@_errorMessage" />
+<LoadingMessage Message="@_loadingMessage" />
+
 <section class="section">
+    @if (_addNewCampaign)
+    {
+        <EditForm Model="_addNewProject" OnValidSubmit="HandleAddProject">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="modal is-active">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Add Campaign</p>
+                        <div class="delete" aria-label="close" @onclick=@(() => ToggleAddCampaign())></div>
+                    </header>
+                    <section class="modal-card-body">
+                        <div class="field">
+                            <label class="heading">Campaign</label>
+                            <div class="control">
+                                <InputText class="input is-danger" @bind-Value="_addNewProject.ProjectCode" required="required" />
+                                <ValidationMessage For="@(() => _addNewProject.ProjectCode)" />
+                            </div>
+                        </div>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button is-success @_buttonClass">Add</button>
+                    </footer>
+                </div>
+            </div>
+        </EditForm>
+    }
+
+    @if(_editTime)
+    {
+        <EditForm Model="_editTimeDto" OnValidSubmit="HandleEditTime">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="modal is-active">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Line Editor: @_editTimeDto.Series.ToString("HH:mm")</p>
+                        <div class="delete" aria-label="close" @onclick=@(() => ToggleEditTime(null))></div>
+                    </header>
+                    <section class="modal-card-body">
+                        <div class="level">
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Time</p>
+                                    <p class="title">@_editTimeDto.Series.ToString("HH:mm")</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div class="field">
+                                    <label class="heading">Agent(s)</label>
+                                    <div class="control">
+                                        <InputNumber class="input is-danger" style="width:75px" @bind-Value="_editTimeDto.Agent" required="required" />
+                                        <ValidationMessage For="@(() => _editTimeDto.Agent)" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button is-success @_buttonClass">Save</button>
+                    </footer>
+                </div>
+            </div>
+        </EditForm>
+    }
+
     <div class="columns is-centered">
-        <SearchShared SearchDate="_search.SearchDate"  />
+        <div class="column is-3">
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                    <div class="tile is-child box">
+                        <p class="title">Filter(s)</p>
+                        <EditForm Model="_search" OnValidSubmit="HandleSearch">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <div class="field">
+                                <label class="heading">Date</label>
+                                <div class="control">
+                                    <InputDate class="input is-danger" @bind-Value="_search.SearchDate" required="required" />
+                                    <ValidationMessage For="@(() => _search.SearchDate)" />
+                                </div>
+                            </div>
+                            <hr />
+                            <button class="button is-primary @_buttonClass">Search</button>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column is-6">
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                    <div class="tile is-child box" style="height:60vh; overflow:auto;">
+                        <div class="columns">
+                            <div class="column">
+                                <p class="title">Calls Per Hour</p>
+                            </div>
+                        </div>
+                        @if (_reportResponse == null)
+                        {
+                            <hr />
+                            <p class="subtitle">@Messages.NoCampaignSelect</p>
+                        }
+                        else
+                        {
+                            <table class="table is-striped is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <td></td>
+                                        <td>Time</td>
+                                        <td>Agent</td>
+                                        <td>Contact</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach(var line in _reportResponse.CPHLines)
+                                    {
+                                        var selected = false;
+
+                                        if ((line.Series.Hour == (DateTime.Now.Hour + 1)) && (line.Series.Minute - DateTime.Now.Minute > -5 && line.Series.Minute - DateTime.Now.Minute <= 0))
+                                        {
+                                            selected = true;
+                                        }
+
+                                        <tr id="@line.Id" class="@((line.Series.Hour == 12 && line.Series.Minute == 30) || (line.Series.Hour == 21 && line.Series.Minute == 0)
+                                                                    ? "is-selected"
+                                                                    : selected 
+                                                                        ? "has-background-warning" 
+                                                                        : string.Empty)">
+                                            <td><a @onclick=@(() => ToggleEditTime(@line.Id))><span class="material-icons">edit</span></a></td>
+                                            <td>@line.Series.ToString("HH:mm")</td>
+                                            <td>@line.Agent</td>
+                                            <td>@line.Contact</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column is-3">
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                    <div class="tile is-child box">
+                        <p class="title">Campaign</p>
+                        @if (_projectList.Any())
+                        {
+                            <div class="field">
+                                <div class="control">
+                                    <label class="heading">Campaign</label>
+                                    <div class="select is-fullwidth">
+                                        <select class="form-select" @onchange="HandleProjectChange">
+                                            <option value="">-- Select Campaign --</option>
+                                            @foreach (var project in _projectList)
+                                            {
+                                                if (_search.ProjectID.HasValue && _search.ProjectID.Value == project.Id)
+                                                {
+                                                    <option value="@project.Id" selected="selected">@project.ProjectCode1</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@project.Id">@project.ProjectCode1</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="subtitle">@Messages.NoCampaign</p>
+                        }
+                        <hr />
+                        <div class="button is-success" @onclick=@(() => ToggleAddCampaign())>Add</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>

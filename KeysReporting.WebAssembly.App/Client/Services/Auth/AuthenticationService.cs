@@ -9,12 +9,12 @@ using System.Security.Claims;
 
 namespace KeysReporting.WebAssembly.App.Client.Services.Auth
 {
-    public class Authentication : BaseHttpService, IAuthentication
+    public class AuthenticationService : BaseHttpService, IAuthenticationService
     {
         private readonly ILocalStorageService _localStorage;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-        public Authentication(ILocalStorageService localStorage, IWebAssemblyHostEnvironment hostEnvironment,
+        public AuthenticationService(ILocalStorageService localStorage, IWebAssemblyHostEnvironment hostEnvironment,
             AuthenticationStateProvider authenticationStateProvider) : base(localStorage, hostEnvironment)
         {
             _localStorage = localStorage;
@@ -46,7 +46,11 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Auth
         {
             var response = await _authenticationStateProvider.GetAuthenticationStateAsync();
 
-            if(!response.User.Claims.Any())
+            await GetBearerToken();
+
+            var responseDto = await SendRequest<AuthCheck>("Api/AuthCheck", HttpMethod.Get);
+
+            if(!response.User.Claims.Any() || responseDto == null || !responseDto.Authorized)
             {
                 await Logout();
                 return false;

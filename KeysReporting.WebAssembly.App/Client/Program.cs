@@ -3,6 +3,7 @@ using KeysReporting.WebAssembly.App.Client;
 using KeysReporting.WebAssembly.App.Client.Providers;
 using KeysReporting.WebAssembly.App.Client.Services.Auth;
 using KeysReporting.WebAssembly.App.Client.Services.Base;
+using KeysReporting.WebAssembly.App.Client.Services.CPH;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -23,6 +24,7 @@ builder.Services.AddScoped<AuthenticationStateProvider>(p =>
 
 builder.Services.AddAuthorizationCore();
 
-builder.Services.AddScoped<IAuthentication, Authentication>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ICPHReportService, CPHReportService>();
 
 await builder.Build().RunAsync();

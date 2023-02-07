@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace KeysReporting.WebAssembly.App.Shared.CPH
 {
-    public class SearchDto
+    public class AddProjectDto
     {
-        private DateTime _SearchDate;
+        private DateTime _ReportDate;
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime SearchDate { get { return _SearchDate;  } set { _SearchDate = value.Date; } }
+        public DateTime ReportDate { get { return _ReportDate; } set { _ReportDate = value.Date; } }
 
-        public long? ProjectID { get; set; }
+        [Required]
+        [StringLength(255)]
+        public string ProjectCode { get; set; }
     }
 }

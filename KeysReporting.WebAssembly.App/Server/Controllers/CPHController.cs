@@ -2,6 +2,7 @@
 using KeysReporting.WebAssembly.App.Server.Static;
 using KeysReporting.WebAssembly.App.Shared.Auth;
 using KeysReporting.WebAssembly.App.Shared.CPH;
+using KeysReporting.WebAssembly.App.Shared.Lists;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,22 +26,23 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
 
 
         // GET: api/<CPH>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("GetProjects")]
+        public async Task<ActionResult<ProjectListDto>> GetProjects(DateTime reportDate)
         {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<CPH>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
+            try
+            {
+                return Ok(await _CPHReport.GetProjectListAsync(reportDate));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+                return Problem($"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+            }
         }
 
         // POST api/<CPH>
         [HttpPost]
-        public async Task<ActionResult<CPHReportDto>> Post(SearchDto searchDto)
+        public async Task<ActionResult<CPHReportDto>> GetReport(SearchDto searchDto)
         {
             try
             {
@@ -53,16 +55,18 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
             }
         }
 
-        // PUT api/<CPH>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPost("CreateCampaign")]
+        public async Task<ActionResult<ProjectListDto>> CreateNewCampaign(AddProjectDto addProjectDto)
         {
-        }
-
-        // DELETE api/<CPH>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            try
+            {
+                return Ok(await _CPHReport.CreateNewProject(addProjectDto));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+                return Problem($"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+            }
         }
     }
 }

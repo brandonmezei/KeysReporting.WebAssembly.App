@@ -1,0 +1,21 @@
+﻿@if (!string.IsNullOrEmpty(Message))
+{
+        <section class="hero is-primary is-small">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title">
+                        Loading
+                    </h1>
+                    <h2 class="subtitle">
+                    @Message
+                    </h2>
+                </div>
+            </div>
+        </section>
+}
+
+@code
+{
+    [Parameter]
+    public string Message { get; set; }
+}

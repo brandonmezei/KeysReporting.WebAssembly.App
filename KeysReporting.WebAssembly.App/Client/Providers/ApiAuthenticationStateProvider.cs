@@ -21,7 +21,7 @@ namespace KeysReporting.WebAssembly.App.Client.Providers
             var user = new ClaimsPrincipal(new ClaimsIdentity());
             var savedToken = await _localStorage.GetItemAsync<string>("AccessToken");
 
-            if (savedToken == null)
+            if (savedToken == null || savedToken.Length == 0)
                 return new AuthenticationState(user);
 
             var tokenContent = _JwtSecurityTokenHandler.ReadJwtToken(savedToken);

@@ -9,7 +9,7 @@ namespace KeysReporting.WebAssembly.App.Client.Pages
     public partial class Index
     {
         [Inject]
-        private IAuthentication AuthService { get; set; }
+        private IAuthenticationService AuthService { get; set; }
 
         [Inject]
         private NavigationManager NavManager { get; set; }
@@ -31,13 +31,13 @@ namespace KeysReporting.WebAssembly.App.Client.Pages
             try
             {
                 if (!await AuthService.LogIn(_userLogin))
-                    _errorMessage = Static.Messages.LoginError;
+                    _errorMessage = Messages.LoginError;
                 else
                     NavManager.NavigateTo("Dashboard");
             }
-            catch (Exception ex)
+            catch
             {
-                _errorMessage = ex.Message;
+                _errorMessage = Messages.LoginError;
             }
 
             _buttonClass = string.Empty;

@@ -7,7 +7,7 @@ namespace KeysReporting.WebAssembly.App.Client.Shared
     {
 
         [Inject]
-        private IAuthentication _authService { get; set; }
+        private IAuthenticationService _authService { get; set; }
 
         [Inject]
         private NavigationManager _navManager { get; set; }

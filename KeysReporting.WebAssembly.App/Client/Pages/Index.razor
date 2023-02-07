@@ -1,7 +1,6 @@
 ﻿@page "/"
 
 <PageTitle>Keys360 Reporting</PageTitle>
-
 <PageDisplayTitle Title="Keys 360 Reporting" Sub="Please enter credentials below. All fields are case sensitive." />
 <ErrorMessage Message="@_errorMessage" />
 
@@ -16,16 +15,16 @@
                             <DataAnnotationsValidator />
                             <ValidationSummary />
                             <div class="field">
-                                <label for="username" class="heading">User</label>
+                                <label class="heading">User</label>
                                 <div class="control">
-                                    <InputText class="input is-danger" @bind-Value="_userLogin.userName" />
+                                    <InputText class="input is-danger" @bind-Value="_userLogin.userName" required="required" />
                                     <ValidationMessage For="@(() => _userLogin.userName)" />
                                 </div>
                             </div>
                             <div class="field">
-                                <label for="password" class="heading">Password</label>
+                                <label class="heading">Password</label>
                                 <div class="control">
-                                    <InputText class="input is-danger" type="password" @bind-Value="_userLogin.password" />
+                                    <InputText class="input is-danger" type="password" @bind-Value="_userLogin.password" required="required" />
                                     <ValidationMessage For="@(() => _userLogin.password)" />
                                 </div>
                             </div>
