@@ -2,8 +2,8 @@
 
 namespace KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI
 {
-    public interface ILiveVoxAPI
+    public interface ILiveVoxAPIService
     {
-        Task<UserLoginResponseDto> Login(UserLoginDto userLoginDto);
+        Task<UserLoginResponseDto> LoginAsync(UserLoginDto userLoginDto);
     }
 }

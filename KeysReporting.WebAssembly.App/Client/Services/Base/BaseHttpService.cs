@@ -40,7 +40,14 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Base
 
             if (response.IsSuccessStatusCode)
             {
-                return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), _jsonSetting);
+                try
+                {
+                    return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), _jsonSetting);
+                }
+                catch
+                {
+                    return default;
+                }
             }
             else
             {

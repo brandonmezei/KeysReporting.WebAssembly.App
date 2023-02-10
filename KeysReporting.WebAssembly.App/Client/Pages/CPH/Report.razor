@@ -6,6 +6,10 @@
 <ErrorMessage Message="@_errorMessage" />
 <LoadingMessage Message="@_loadingMessage" />
 
+@{
+    double ContactLine = 0;
+}
+
 <section class="section">
     @if (_addNewCampaign)
     {
@@ -17,7 +21,7 @@
                 <div class="modal-card">
                     <header class="modal-card-head">
                         <p class="modal-card-title">Add Campaign</p>
-                        <div class="delete" aria-label="close" @onclick=@(() => ToggleAddCampaign())></div>
+                        <div class="delete" aria-label="close" @onclick=@(() => ToggleAddroject())></div>
                     </header>
                     <section class="modal-card-body">
                         <div class="field">
@@ -36,7 +40,7 @@
         </EditForm>
     }
 
-    @if(_editTime)
+    @if (_editTime)
     {
         <EditForm Model="_editTimeDto" OnValidSubmit="HandleEditTime">
             <DataAnnotationsValidator />
@@ -75,6 +79,50 @@
         </EditForm>
     }
 
+    @if (_removeProjectWarn)
+    {
+        <div class="modal is-active">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Remove @_reportResponse.Project?.ProjectCode1</p>
+                    <div class="delete" aria-label="close" @onclick=@(() => ToggleRemoveProject())></div>
+                </header>
+                <section class="modal-card-body">
+                    <p class="subtitle">Are you sure you want to remove <b>@_reportResponse.Project?.ProjectCode1</b> from <b>@_reportResponse.ReportDate.ToString("yyyy-MM-dd")</b>?</p>
+                </section>
+                <footer class="modal-card-foot">
+                    <div class="buttons">
+                        <div class="button is-danger" @onclick=@(() => ToggleRemoveProject())>No</div>
+                        <div class="button is-success @_buttonClass" @onclick=@(() => HandleDeleteProject())>Yes</div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    }
+
+    @if (_resetWarn)
+    {
+        <div class="modal is-active">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Remove @_reportResponse.Project?.ProjectCode1</p>
+                    <div class="delete" aria-label="close" @onclick=@(() => ToggleReset())></div>
+                </header>
+                <section class="modal-card-body">
+                    <p class="subtitle">Are you sure you want to reset the project @_reportResponse.Project?.ProjectCode1?</p>
+                </section>
+                <footer class="modal-card-foot">
+                    <div class="buttons">
+                        <div class="button is-danger" @onclick=@(() => ToggleReset())>No</div>
+                        <div class="button is-success @_buttonClass" @onclick=@(() => HandleReset())>Yes</div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    }
+
     <div class="columns is-centered">
         <div class="column is-3">
             <div class="tile is-ancestor">
@@ -104,8 +152,17 @@
                     <div class="tile is-child box" style="height:60vh; overflow:auto;">
                         <div class="columns">
                             <div class="column">
-                                <p class="title">Calls Per Hour</p>
+                                <p class="title">Calls Per Hour: @_reportResponse?.Project?.ProjectCode1</p>
                             </div>
+                            @if (_reportResponse != null)
+                            {
+                                <div class="column">
+                                    <div class="buttons is-pulled-right">
+                                        <div class="button is-warning" @onclick=@(() => JumpToNow())>Jump to Now</div>
+                                        <div class="button is-danger" @onclick=@(() => ToggleReset())>Reset</div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                         @if (_reportResponse == null)
                         {
@@ -114,6 +171,22 @@
                         }
                         else
                         {
+                            <EditForm Model="_editCPH" OnValidSubmit="HandleEditCPH">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+                                <label class="heading">CPH</label>
+                                <div class="field has-addons is-rounded">
+                                    <div class="control">
+                                        <InputNumber class="input is-danger" style="width:75px" @bind-Value="_editCPH.CPH" required="required" />
+                                        <ValidationMessage For="@(() => _editCPH.CPH)" />
+                                    </div>
+                                    <div class="control">
+                                        <button class="button is-success @_buttonClass"><span class="material-icons" style="font-size:36px">save</span></button>
+                                    </div>
+                                </div>
+                            </EditForm>
+
+
                             <table class="table is-striped is-fullwidth">
                                 <thead>
                                     <tr>
@@ -124,19 +197,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach(var line in _reportResponse.CPHLines)
+                                    @foreach (var line in _reportResponse.CPHLines)
                                     {
                                         var selected = false;
 
                                         if ((line.Series.Hour == (DateTime.Now.Hour + 1)) && (line.Series.Minute - DateTime.Now.Minute > -5 && line.Series.Minute - DateTime.Now.Minute <= 0))
                                         {
                                             selected = true;
+                                            ContactLine = line.Contact;
                                         }
 
-                                        <tr id="@line.Id" class="@((line.Series.Hour == 12 && line.Series.Minute == 30) || (line.Series.Hour == 21 && line.Series.Minute == 0)
-                                                                    ? "is-selected"
-                                                                    : selected 
-                                                                        ? "has-background-warning" 
+                                        <tr id="@(selected? "currentRow" :string.Empty)"
+                                            class="@((line.Series.Hour == 12 && line.Series.Minute == 30) || (line.Series.Hour == 21 && line.Series.Minute == 0)
+                                                                    ? CSSClasses.SelectLine
+                                                                    : selected
+                                                                        ? CSSClasses.WarnLine
                                                                         : string.Empty)">
                                             <td><a @onclick=@(() => ToggleEditTime(@line.Id))><span class="material-icons">edit</span></a></td>
                                             <td>@line.Series.ToString("HH:mm")</td>
@@ -156,6 +231,42 @@
                 <div class="tile is-parent">
                     <div class="tile is-child box">
                         <p class="title">Campaign</p>
+                        @if (_reportResponse != null)
+                        {
+                            <div class="level">
+                                <div class="level-item has-text-centered">
+                                    <div>
+                                        <p class="heading">Total Contacts</p>
+                                        <p class="subtitle">@_reportResponse.TotalHours</p>
+                                    </div>
+                                </div>
+                                <div class="level-item has-text-centered">
+                                    <div>
+                                        <p class="heading">Total Hours</p>
+                                        <p class="subtitle">@(Math.Round(((double)@_reportResponse.TotalHours / (double)_reportResponse.CPH) / 0.25) * 0.25)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="level">
+                                <div class="level-item has-text-centered">
+                                    <div>
+                                        <p class="heading">Current Contacts</p>
+                                        <p class="subtitle">@_reportResponse.Completes</p>
+                                    </div>
+                                </div>
+                                <div class="level-item has-text-centered">
+                                    <div>
+                                        <p class="heading">Current CPH</p>
+                                        <p class="subtitle">
+                                            @(_reportResponse.Completes.HasValue && _reportResponse.CPH.HasValue && ContactLine > 0
+                                                ? Math.Round((((double)@_reportResponse.Completes.Value / ContactLine) * (double)_reportResponse.CPH.Value) / 0.25) * 0.25
+                                                : 0)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
                         @if (_projectList.Any())
                         {
                             <div class="field">
@@ -185,7 +296,8 @@
                             <p class="subtitle">@Messages.NoCampaign</p>
                         }
                         <hr />
-                        <div class="button is-success" @onclick=@(() => ToggleAddCampaign())>Add</div>
+                        <div class="button is-success" style="@(_firstLoad ? CSSClasses.DisplayNone : string.Empty)" @onclick=@(() => ToggleAddroject())>Add</div>
+                        <div class="button is-danger" style="@(_search.ProjectID.HasValue ? string.Empty : CSSClasses.DisplayNone)" @onclick=@(() => ToggleRemoveProject())>Remove</div>
                     </div>
                 </div>
             </div>

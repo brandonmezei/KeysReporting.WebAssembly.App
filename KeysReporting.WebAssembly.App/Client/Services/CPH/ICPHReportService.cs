@@ -9,5 +9,8 @@ namespace KeysReporting.WebAssembly.App.Client.Services.CPH
         Task<List<ProjectListDto>> GetProjectListAsync(DateTime reportDate);
 
         Task<ProjectListDto> CreateProjectAsync(AddProjectDto addProjectDto);
+        Task<CPHReportDto> EditCPHReportTimeAsync(EditTimeDto editTimeDto);
+        Task<CPHReportDto> DeleteProjectAsync(DeleteProjectDto deleteProjectDto);
+        Task<CPHReportDto> EditCPH(EditCPHDto editCPHDto);
     }
 }

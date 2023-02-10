@@ -11,6 +11,7 @@ namespace KeysReporting.WebAssembly.App.Server.Configurations
         {
 
             CreateMap<ProjectCode, ProjectListDto>();
+            CreateMap<SourceTable, SourceTableListDto>();
 
             //CPH Report
             CreateMap<Cphheader, CPHReportDto>();

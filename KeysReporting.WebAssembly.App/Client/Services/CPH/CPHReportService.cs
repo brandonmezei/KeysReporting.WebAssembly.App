@@ -48,7 +48,37 @@ namespace KeysReporting.WebAssembly.App.Client.Services.CPH
 
             await GetBearerToken();
 
-            return await SendRequest<ProjectListDto>("Api/CPH/CreateCampaign", HttpMethod.Post, addProjectDto);
+            return await SendRequest<ProjectListDto>("Api/CPH/CreateProject", HttpMethod.Post, addProjectDto);
+        }
+
+        public async Task<CPHReportDto> EditCPHReportTimeAsync(EditTimeDto editTimeDto)
+        {
+            if (!await _authenticationService.CheckLogin())
+                return null;
+
+            await GetBearerToken();
+
+            return await SendRequest<CPHReportDto>("Api/CPH/EditTimeLine", HttpMethod.Post, editTimeDto);
+        }
+
+        public async Task<CPHReportDto> DeleteProjectAsync(DeleteProjectDto deleteProjectDto)
+        {
+            if (!await _authenticationService.CheckLogin())
+                return null;
+
+            await GetBearerToken();
+
+            return await SendRequest<CPHReportDto>("Api/CPH/DeleteProject", HttpMethod.Post, deleteProjectDto);
+        }
+
+        public async Task<CPHReportDto> EditCPH(EditCPHDto editCPHDto)
+        {
+            if (!await _authenticationService.CheckLogin())
+                return null;
+
+            await GetBearerToken();
+
+            return await SendRequest<CPHReportDto>("Api/CPH/EditCPH", HttpMethod.Post, editCPHDto);
         }
     }
 }

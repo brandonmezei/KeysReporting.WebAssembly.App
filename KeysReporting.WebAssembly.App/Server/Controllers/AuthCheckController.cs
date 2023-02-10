@@ -13,9 +13,9 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
     {
         // GET: api/<AuthCheckController>
         [HttpGet]
-        public ActionResult<AuthCheck> Get()
+        public ActionResult<AuthCheckDto> Get()
         {
-            return new AuthCheck { Authorized = true };
+            return new AuthCheckDto { Authorized = true };
         }
     }
 }

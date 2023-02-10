@@ -14,10 +14,10 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
     [AllowAnonymous]
     public class AuthenticationController : ControllerBase
     {
-        private readonly ILiveVoxAPI _liveVoxAPI;
+        private readonly ILiveVoxAPIService _liveVoxAPI;
         private readonly ILogger<AuthenticationController> _logger;
 
-        public AuthenticationController(ILiveVoxAPI liveVoxAPI, ILogger<AuthenticationController> logger)
+        public AuthenticationController(ILiveVoxAPIService liveVoxAPI, ILogger<AuthenticationController> logger)
         {
             _liveVoxAPI = liveVoxAPI;
             _logger = logger;
@@ -29,7 +29,7 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
         {
             try
             {
-                return Ok(await _liveVoxAPI.Login(userLoginDto));
+                return Ok(await _liveVoxAPI.LoginAsync(userLoginDto));
             }
             catch (Exception ex)
             {

@@ -2,6 +2,7 @@ using KeysReporting.WebAssembly.App.Server.Configurations;
 using KeysReporting.WebAssembly.App.Server.Data;
 using KeysReporting.WebAssembly.App.Server.Services;
 using KeysReporting.WebAssembly.App.Server.Services.CPHReport;
+using KeysReporting.WebAssembly.App.Server.Services.Lists;
 using KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +26,9 @@ builder.Services.AddRazorPages();
 
 //Scope
 builder.Services.AddScoped<IHttpClientFactory, HttpFactoryWithProxy>();
-builder.Services.AddScoped<ILiveVoxAPI, LiveVoxAPI>();
-builder.Services.AddScoped<ICPHReport, CPHReport>();
+builder.Services.AddScoped<ILiveVoxAPIService, LiveVoxAPIService>();
+builder.Services.AddScoped<ICPHReportService, CPHReportService>();
+builder.Services.AddScoped<ISourceTableService, SourceTableService>();
 
 //Use for Mapper
 builder.Services.AddAutoMapper(typeof(MapperConfig));

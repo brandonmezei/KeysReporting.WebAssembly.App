@@ -15,7 +15,7 @@ using KeysReporting.WebAssembly.App.Server.Static;
 namespace KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI
 {
 
-    public class LiveVoxAPI : ILiveVoxAPI
+    public class LiveVoxAPIService : ILiveVoxAPIService
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
@@ -24,7 +24,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI
         private readonly string? _AccessToken;
         private readonly JsonSerializerOptions _jsonSetting = new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNameCaseInsensitive = true };
 
-        public LiveVoxAPI(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public LiveVoxAPIService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
@@ -63,7 +63,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI
             }
         }
 
-        public async Task<UserLoginResponseDto> Login(UserLoginDto userLoginDto)
+        public async Task<UserLoginResponseDto> LoginAsync(UserLoginDto userLoginDto)
         {
             var response = await SendRequest<APILogInResponse>($@"{_apiLink}/session/login", null, userLoginDto);
 

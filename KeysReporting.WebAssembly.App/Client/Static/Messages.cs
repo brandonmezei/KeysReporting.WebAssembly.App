@@ -14,5 +14,9 @@ namespace KeysReporting.WebAssembly.App.Client.Static
         public const string LoadingProjects = "Loading Project(s)...";
         public const string LoadingReport = "Loading Report...";
         public const string AddingProject = "Adding Project...";
+        public const string SavingLine = "Saving Line...";
+        public const string DeleteProject = "Deleting Project...";
+        public const string NoNegatives = "Cannot use negative numbers...";
+        public const string SavingCPH = "Saving CPH...";
     }
 }

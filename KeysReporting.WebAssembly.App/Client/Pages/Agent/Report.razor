@@ -1,0 +1,46 @@
+﻿@page "/Agent/Report"
+
+
+<section class="section">
+    <div class="columns is-centered">
+        <div class="column is-4">
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                    <div class="tile is-child box">
+                        <p class="title">Filter(s)</p>
+                        <EditForm Model="_search" OnValidSubmit="HandleSearch">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <div class="field">
+                                <div class="control">
+                                    <InputText class="input is-primary" placeholder="Client" @bind-Value="_search.Client" />
+                                    <ValidationMessage For="@(() => _search.Client)" />
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select class="form-select">
+                                            <option value="">-- Source Table --</option>
+                                            @foreach (var project in _sourceTables)
+                                            {
+                                                if (_search.SourceTable.HasValue && _search.SourceTable.Value == project.Id)
+                                                {
+                                                    <option value="@project.Id" selected="selected">@project.SourceTable1</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@project.Id">@project.SourceTable1</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

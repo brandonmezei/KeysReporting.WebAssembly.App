@@ -12,18 +12,12 @@
                             Reports
                         </a>
                         <div class="navbar-dropdown">
-                            @*<a href="@Url.Action("ActiveCampaigns", "Reports", new { firstLoad = true })" class="navbar-item">
-                            Active Campaign
-                            </a>*@
-                            <a href="" class="navbar-item">
+                            <a href="/Agent/Report" class="navbar-item">
                                 Agent Report
                             </a>
                             <a href="/CPH/Report" class="navbar-item">
                                 Calls Per Hour Report
                             </a>
-                            @*<a href="@Url.Action("BillingReport", "Reports", new { firstLoad = true })" class="navbar-item">
-                            Billing Report
-                            </a>*@
                         </div>
                     </div>
                     <div class="navbar-item has-dropdown is-hoverable">
@@ -57,5 +51,8 @@
                 </div>
             </div>
             </Authorized>
+            <NotAuthorized>
+                <RedirectToLogin />
+            </NotAuthorized>
         </AuthorizeView>
 </nav>

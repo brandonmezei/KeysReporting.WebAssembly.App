@@ -48,7 +48,7 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Auth
 
             await GetBearerToken();
 
-            var responseDto = await SendRequest<AuthCheck>("Api/AuthCheck", HttpMethod.Get);
+            var responseDto = await SendRequest<AuthCheckDto>("Api/AuthCheck", HttpMethod.Get);
 
             if(!response.User.Claims.Any() || responseDto == null || !responseDto.Authorized)
             {

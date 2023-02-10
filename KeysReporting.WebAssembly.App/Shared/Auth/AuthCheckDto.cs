@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KeysReporting.WebAssembly.App.Shared.Auth
 {
-    public class AuthCheck
+    public class AuthCheckDto
     {
         public bool Authorized { get; set; }
     }

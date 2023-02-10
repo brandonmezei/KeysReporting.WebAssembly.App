@@ -15,12 +15,12 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
     [Authorize]
     public class CPHController : ControllerBase
     {
-        private ICPHReport _CPHReport;
+        private readonly ICPHReportService _CPHReport;
         private readonly ILogger<CPHController> _logger;
 
-        public CPHController(ICPHReport CPHReport, ILogger<CPHController> logger) 
-        { 
-            _CPHReport= CPHReport;
+        public CPHController(ICPHReportService CPHReport, ILogger<CPHController> logger)
+        {
+            _CPHReport = CPHReport;
             _logger = logger;
         }
 
@@ -55,12 +55,54 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
             }
         }
 
-        [HttpPost("CreateCampaign")]
+        [HttpPost("CreateProject")]
         public async Task<ActionResult<ProjectListDto>> CreateNewCampaign(AddProjectDto addProjectDto)
         {
             try
             {
-                return Ok(await _CPHReport.CreateNewProject(addProjectDto));
+                return Ok(await _CPHReport.CreateNewProjectAsync(addProjectDto));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+                return Problem($"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+            }
+        }
+
+        [HttpPost("EditTimeLine")]
+        public async Task<ActionResult<CPHReportDto>> EditTimeLine(EditTimeDto EditLine)
+        {
+            try
+            {
+                return Ok(await _CPHReport.EditTimeLineAsync(EditLine));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+                return Problem($"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+            }
+        }
+
+        [HttpPost("DeleteProject")]
+        public async Task<ActionResult<CPHReportDto>> DeleteProject(DeleteProjectDto deleteProjectDto)
+        {
+            try
+            {
+                return Ok(await _CPHReport.DeleteProjectAsync(deleteProjectDto));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+                return Problem($"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+            }
+        }
+
+        [HttpPost("EditCPH")]
+        public async Task<ActionResult<CPHReportDto>> EditCPH(EditCPHDto editCPHDto)
+        {
+            try
+            {
+                return Ok(await _CPHReport.EditCPH(editCPHDto));
             }
             catch (Exception ex)
             {

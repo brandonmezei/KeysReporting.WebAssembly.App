@@ -33,6 +33,16 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
+
+    <script>
+        function scrollIntoView(elementId) {
+            var elem = document.getElementById(elementId);
+
+            if (elem) {
+                elem.scrollIntoView();
+            }
+        }
+    </script>
 </body>
 
 </html>

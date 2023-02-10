@@ -4,6 +4,7 @@ using KeysReporting.WebAssembly.App.Client.Providers;
 using KeysReporting.WebAssembly.App.Client.Services.Auth;
 using KeysReporting.WebAssembly.App.Client.Services.Base;
 using KeysReporting.WebAssembly.App.Client.Services.CPH;
+using KeysReporting.WebAssembly.App.Client.Services.Lists;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -26,5 +27,6 @@ builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ICPHReportService, CPHReportService>();
+builder.Services.AddScoped<ISourceTableService, SourceTableService>();
 
 await builder.Build().RunAsync();
