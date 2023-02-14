@@ -2,8 +2,8 @@
 
 namespace KeysReporting.WebAssembly.App.Client.Services.Lists
 {
-    public interface ISourceTableService
+    public interface IAgentService
     {
-        Task<List<SourceTableListDto>> GetSourceAsync();
+        Task<List<AgentListDto>> GetAgentAsync();
     }
 }

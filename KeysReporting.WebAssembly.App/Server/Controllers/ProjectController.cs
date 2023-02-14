@@ -11,32 +11,30 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class SourceTableController : ControllerBase
+    public class ProjectController : ControllerBase
     {
-        private readonly ILogger<SourceTableController> _logger;
-        private readonly ISourceTableService _sourceTableService;
+        private readonly ILogger<ProjectController> _logger;
+        private readonly IProjectService _projectService;
 
-        public SourceTableController(ILogger<SourceTableController> logger, ISourceTableService sourceTableService) 
+        public ProjectController(ILogger<ProjectController> logger, IProjectService projectService)
         {
             _logger = logger;
-            _sourceTableService = sourceTableService;
+            _projectService = projectService;
         }
 
         // GET: api/<SourceTableController>
         [HttpGet]
-        public async Task<ActionResult<SourceTableListDto>> Get()
+        public async Task<ActionResult<ProjectListDto>> Get()
         {
             try
             {
-                return Ok(await _sourceTableService.GetSourceAsync());
+                return Ok(await _projectService.GetProjectAsync());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"{Messages.SomethingWentWrong}{nameof(SourceTableController)}{ex.Message}");
-                return Problem($"{Messages.SomethingWentWrong}{nameof(SourceTableController)}{ex.Message}");
+                _logger.LogError(ex, $"{Messages.SomethingWentWrong}{nameof(ProjectController)}{ex.Message}");
+                return Problem($"{Messages.SomethingWentWrong}{nameof(ProjectController)}{ex.Message}");
             }
         }
-
-        
     }
 }

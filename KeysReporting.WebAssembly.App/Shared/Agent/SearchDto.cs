@@ -10,5 +10,8 @@ namespace KeysReporting.WebAssembly.App.Shared.Agent
     {
         public string? Client { get; set; }
         public long? SourceTable { get; set; }
+        public long? Project { get; set; }
+        public long? Agent { get; set; }
+
     }
 }

@@ -22,15 +22,55 @@
                                     <div class="select is-fullwidth">
                                         <select class="form-select">
                                             <option value="">-- Source Table --</option>
-                                            @foreach (var project in _sourceTables)
+                                            @foreach (var item in _sourceTables)
                                             {
-                                                if (_search.SourceTable.HasValue && _search.SourceTable.Value == project.Id)
+                                                if (_search.SourceTable.HasValue && _search.SourceTable.Value == item.Id)
                                                 {
-                                                    <option value="@project.Id" selected="selected">@project.SourceTable1</option>
+                                                    <option value="@item.Id" selected="selected">@item.SourceTable1</option>
                                                 }
                                                 else
                                                 {
-                                                    <option value="@project.Id">@project.SourceTable1</option>
+                                                    <option value="@item.Id">@item.SourceTable1</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select class="form-select">
+                                            <option value="">-- Campaign --</option>
+                                            @foreach (var item in _projectTable)
+                                            {
+                                                if (_search.Project.HasValue && _search.Project.Value == item.Id)
+                                                {
+                                                    <option value="@item.Id" selected="selected">@item.ProjectCode1</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Id">@item.ProjectCode1</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select class="form-select">
+                                            <option value="">-- Agent --</option>
+                                            @foreach (var item in _agentTable)
+                                            {
+                                                if (_search.Agent.HasValue && _search.Agent.Value == item.Id)
+                                                {
+                                                    <option value="@item.Id" selected="selected">@item.AgentId - @item.AgentName</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Id">@item.AgentId - @item.AgentName</option>
                                                 }
                                             }
                                         </select>

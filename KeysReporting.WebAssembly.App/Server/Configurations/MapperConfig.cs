@@ -12,6 +12,9 @@ namespace KeysReporting.WebAssembly.App.Server.Configurations
 
             CreateMap<ProjectCode, ProjectListDto>();
             CreateMap<SourceTable, SourceTableListDto>();
+            CreateMap<Agent, AgentListDto>()
+                .ForMember(x => x.AgentName, q => q
+                    .MapFrom(mapper => $"{mapper.FirstName} {mapper.LastName}"));
 
             //CPH Report
             CreateMap<Cphheader, CPHReportDto>();

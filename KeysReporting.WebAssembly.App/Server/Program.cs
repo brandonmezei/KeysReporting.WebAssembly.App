@@ -29,6 +29,8 @@ builder.Services.AddScoped<IHttpClientFactory, HttpFactoryWithProxy>();
 builder.Services.AddScoped<ILiveVoxAPIService, LiveVoxAPIService>();
 builder.Services.AddScoped<ICPHReportService, CPHReportService>();
 builder.Services.AddScoped<ISourceTableService, SourceTableService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IAgentService, AgentService>();
 
 //Use for Mapper
 builder.Services.AddAutoMapper(typeof(MapperConfig));

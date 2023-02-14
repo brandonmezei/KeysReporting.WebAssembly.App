@@ -6,26 +6,25 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace KeysReporting.WebAssembly.App.Client.Services.Lists
 {
-    public class SourceTableService : BaseHttpService, ISourceTableService
+    public class ProjectService : BaseHttpService, IProjectService
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly ILocalStorageService _localStorage;
 
-        public SourceTableService(IAuthenticationService authenticationService, ILocalStorageService localStorage, IWebAssemblyHostEnvironment hostEnvironment) : base(localStorage, hostEnvironment)
+        public ProjectService(IAuthenticationService authenticationService, ILocalStorageService localStorage, IWebAssemblyHostEnvironment hostEnvironment) : base(localStorage, hostEnvironment)
         {
             _authenticationService = authenticationService;
             _localStorage = localStorage;
         }
 
-        public async Task<List<SourceTableListDto>> GetSourceAsync()
+        public async Task<List<ProjectListDto>> GetProjectAsync()
         {
             if (!await _authenticationService.CheckLogin())
                 return null;
 
             await GetBearerToken();
 
-            return await SendRequest<List<SourceTableListDto>>("Api/SourceTable", HttpMethod.Get);
-
+            return await SendRequest<List<ProjectListDto>>("Api/Project", HttpMethod.Get);
         }
     }
 }

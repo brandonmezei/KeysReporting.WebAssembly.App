@@ -28,5 +28,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ICPHReportService, CPHReportService>();
 builder.Services.AddScoped<ISourceTableService, SourceTableService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IAgentService, AgentService>();
 
 await builder.Build().RunAsync();
