@@ -1,4 +1,5 @@
-﻿using KeysReporting.WebAssembly.App.Client.Services.Auth;
+﻿using KeysReporting.WebAssembly.App.Client.Services.Agent;
+using KeysReporting.WebAssembly.App.Client.Services.Auth;
 using KeysReporting.WebAssembly.App.Client.Services.CPH;
 using KeysReporting.WebAssembly.App.Client.Services.Lists;
 using KeysReporting.WebAssembly.App.Client.Static;
@@ -23,9 +24,14 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
         private IAgentService AgentService { get; set; }
 
         [Inject]
+        private IAgentReportService AgentReportService { get; set; }
+
+
+        [Inject]
         private NavigationManager NavManager { get; set; }
 
         private SearchDto _search = new();
+        private AgentReportDto _agentReport;
         private List<SourceTableListDto> _sourceTables = new();
         private List<ProjectListDto> _projectTable = new();
         private List<AgentListDto> _agentTable = new();
@@ -34,6 +40,7 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
         public string? _buttonClass;
         public string? _errorMessage;
         public string? _loadingMessage;
+        public string? _warnMessage;
 
         protected override async Task OnInitializedAsync()
         {
@@ -61,10 +68,16 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
             _buttonClass = CSSClasses.ButtonSpin;
             _loadingMessage = Messages.LoadingReport;
             _errorMessage = string.Empty;
+            _warnMessage = string.Empty;
 
             try
             {
+                _agentReport = await AgentReportService.GetAgentReportAsync(_search);
 
+                _warnMessage = _agentReport.AgentLines.Any()
+                    ? string.Empty
+                    : Messages.NothingFound;
+                    
             }
             catch
             {
@@ -73,6 +86,48 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
 
             _loadingMessage = string.Empty;
             _buttonClass = string.Empty;
+        }
+
+        private void HandleSourceChange(ChangeEventArgs e)
+        {
+            try
+            {
+                _search.SourceTable = string.IsNullOrEmpty(e.Value.ToString())
+                    ? null
+                    : long.Parse(e.Value.ToString());
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+        }
+
+        private void HandleProjectChange(ChangeEventArgs e)
+        {
+            try
+            {
+                _search.Project = string.IsNullOrEmpty(e.Value.ToString())
+                    ? null
+                    : long.Parse(e.Value.ToString());
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+        }
+
+        private void HandleAgentChange(ChangeEventArgs e)
+        {
+            try
+            {
+                _search.Agent = string.IsNullOrEmpty(e.Value.ToString())
+                    ? null
+                    : long.Parse(e.Value.ToString());
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
         }
 
     }

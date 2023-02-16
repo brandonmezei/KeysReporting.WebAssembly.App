@@ -1,9 +1,13 @@
 ﻿@page "/Agent/Report"
-
+<PageTitle>Keys360 Reporting - Agent Report</PageTitle>
+<PageDisplayTitle Title="Agent Report" Sub="Agent Results Report" />
+<ErrorMessage Message="@_errorMessage" />
+<LoadingMessage Message="@_loadingMessage" />
+<WarnMessage Message="@_warnMessage" />
 
 <section class="section">
     <div class="columns is-centered">
-        <div class="column is-4">
+        <div class="column @(_agentReport != null && _agentReport.AgentLines.Any() ? "is-3" : "is-4")">
             <div class="tile is-ancestor">
                 <div class="tile is-parent">
                     <div class="tile is-child box">
@@ -20,7 +24,7 @@
                             <div class="field">
                                 <div class="control">
                                     <div class="select is-fullwidth">
-                                        <select class="form-select">
+                                        <select class="form-select" @onchange="HandleSourceChange">
                                             <option value="">-- Source Table --</option>
                                             @foreach (var item in _sourceTables)
                                             {
@@ -40,7 +44,7 @@
                             <div class="field">
                                 <div class="control">
                                     <div class="select is-fullwidth">
-                                        <select class="form-select">
+                                        <select class="form-select" @onchange="HandleProjectChange">
                                             <option value="">-- Campaign --</option>
                                             @foreach (var item in _projectTable)
                                             {
@@ -60,7 +64,7 @@
                             <div class="field">
                                 <div class="control">
                                     <div class="select is-fullwidth">
-                                        <select class="form-select">
+                                        <select class="form-select" @onchange="HandleAgentChange">
                                             <option value="">-- Agent --</option>
                                             @foreach (var item in _agentTable)
                                             {
@@ -77,10 +81,189 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="field">
+                                <label class="heading">Start Date</label>
+                                <div class="control">
+                                    <InputDate class="input is-primary" @bind-Value="_search.StartDate" />
+                                    <ValidationMessage For="@(() => _search.StartDate)" />
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="heading">End Date</label>
+                                <div class="control">
+                                    <InputDate class="input is-primary" @bind-Value="_search.EndDate" />
+                                    <ValidationMessage For="@(() => _search.EndDate)" />
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="buttons">
+                                <button type="submit" class="button is-primary @_buttonClass">Search</button>
+                            </div>
                         </EditForm>
                     </div>
                 </div>
             </div>
         </div>
+        @if (_agentReport != null && _agentReport.AgentLines.Any())
+        {
+            <div class="column is-9" style="overflow-x:scroll">
+                <div class="tile is-ancestor">
+                    <div class="tile is-parent">
+                        <div class="tile is-child box">
+                            <p class="title">Report</p>
+                            <div class="table-container">
+                                <table class="table is-striped is-bordered is-fullwidth">
+                                    <thead>
+                                        <tr>
+                                            <td>AGENT ID</td>
+                                            <td>AGENT NAME</td>
+                                            <td>DOLLARS RAISED</td>
+                                            <td>COMPLETES</td>
+                                            <td>BADS</td>
+                                            <td>CALLABLE</td>
+                                            <td>RESPONSE</td>
+                                            <td>PAC</td>
+                                            <td>PAC SUM</td>
+                                            <td>PAC AVG</td>
+                                            <td>PAC RATE</td>
+                                            <td>PAC YEAR</td>
+                                            <td>LG PAC SUM</td>
+                                            <td>PAC DIFF</td>
+                                            <td>OTG</td>
+                                            <td>OTG SUM</td>
+                                            <td>OTG AVG</td>
+                                            <td>OTG RATE</td>
+                                            <td>LG OTG SUM</td>
+                                            <td>OTG DIFF</td>
+                                            <td>DBL</td>
+                                            <td>DBL SUM</td>
+                                            <td>DBL AVG</td>
+                                            <td>OTG PLUS DBL</td>
+                                            <td>MUP</td>
+                                            <td>MUP SUM</td>
+                                            <td>MUP AVG</td>
+                                            <td>MUP RATE</td>
+                                            <td>CANCEL</td>
+                                            <td>CANCEL RATE</td>
+                                            <td>REFUSALS</td>
+                                            <td>DNC RATE</td>
+                                            <td>NRNS</td>
+                                            <td>WILL SEND</td>
+                                            <td>MAIL</td>
+                                            <td>MAYBE</td>
+                                            <td>OTG MES</td>
+                                            <td>OTG MES SUM</td>
+                                            <td>QUEST</td>
+                                            <td>QUEST RATE</td>
+                                            <td>TOTAL TALK</td>
+                                            <td>AVG TALK</td>
+                                            <td>TOTAL WRAP</td>
+                                            <td>AVG WRAP</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach(var line in _agentReport.AgentLines)
+                                        {
+                                            <tr>
+                                                <td>@line.AgentID</td>
+                                                <td>@line.AgentName</td>
+                                                <td>@line.DollarsRaised</td>
+                                                <td>@line.Complete</td>
+                                                <td>@(line.Complete - line.Callable)</td>
+                                                <td>@line.Callable</td>
+                                                <td>@line.Response%</td>
+                                                <td>@line.PacCount</td>
+                                                <td>@line.PacSum</td>
+                                                <td>@line.PacAverage</td>
+                                                <td>@line.PacRate%</td>
+                                                <td>@line.PacYear</td>
+                                                <td>@line.LGPacSum</td>
+                                                <td>@line.PacDiff</td>
+                                                <td>@line.OtgCount</td>
+                                                <td>@line.OTGSum</td>
+                                                <td>@line.OTGAverage</td>
+                                                <td>@line.OtgRate%</td>
+                                                <td>@line.LGOTGSum</td>
+                                                <td>@line.OTGDiff</td>
+                                                <td>@line.DblDipCount</td>
+                                                <td>@line.DblDipSum</td>
+                                                <td>@line.DblDipAverage</td>
+                                                <td>@line.OtgPlusDBL</td>
+                                                <td>@line.MupCount</td>
+                                                <td>@line.MUPSum</td>
+                                                <td>@line.MUPAverage</td>
+                                                <td>@line.MupRate%</td>
+                                                <td>@line.CancelCount</td>
+                                                <td>@line.CancelRate%</td>
+                                                <td>@line.RefusalCount</td>
+                                                <td>@line.DNCRate%</td>
+                                                <td>@line.NrnCount</td>
+                                                <td>@line.WillSendCount</td>
+                                                <td>@line.MailCount</td>
+                                                <td>@line.MaybeSendCount</td>
+                                                <td>@line.BillMe</td>
+                                                <td>@line.BillMeSum</td>
+                                                <td>@line.QuestCount</td>
+                                                <td>@line.QuestRate%</td>
+                                                <td>@line.TotalTalk</td>
+                                                <td>@line.TotalTalkAvg</td>
+                                                <td>@line.TotalWrap</td>
+                                                <td>@line.TotalWrapAvg</td>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <td></td>
+                                            <td><b>Totals</b></td>
+                                            <td>@_agentReport.Summary.DollarsRaised</td>
+                                            <td>@_agentReport.Summary.Complete</td>
+                                            <td>@(_agentReport.Summary.Complete - _agentReport.Summary.Callable)</td>
+                                            <td>@_agentReport.Summary.Callable</td>
+                                            <td>@_agentReport.Summary.Response%</td>
+                                            <td>@_agentReport.Summary.PacCount</td>
+                                            <td>@_agentReport.Summary.PacSum</td>
+                                            <td>@_agentReport.Summary.PacAverage</td>
+                                            <td>@_agentReport.Summary.PacRate%</td>
+                                            <td>@_agentReport.Summary.PacYear</td>
+                                            <td>@_agentReport.Summary.LGPacSum</td>
+                                            <td>@_agentReport.Summary.PacDiff</td>
+                                            <td>@_agentReport.Summary.OtgCount</td>
+                                            <td>@_agentReport.Summary.OTGSum</td>
+                                            <td>@_agentReport.Summary.OTGAverage</td>
+                                            <td>@_agentReport.Summary.OtgRate%</td>
+                                            <td>@_agentReport.Summary.LGOTGSum</td>
+                                            <td>@_agentReport.Summary.OTGDiff</td>
+                                            <td>@_agentReport.Summary.DblDipCount</td>
+                                            <td>@_agentReport.Summary.DblDipSum</td>
+                                            <td>@_agentReport.Summary.DblDipAverage</td>
+                                            <td>@_agentReport.Summary.OtgPlusDBL</td>
+                                            <td>@_agentReport.Summary.MupCount</td>
+                                            <td>@_agentReport.Summary.MUPSum</td>
+                                            <td>@_agentReport.Summary.MUPAverage</td>
+                                            <td>@_agentReport.Summary.MupRate%</td>
+                                            <td>@_agentReport.Summary.CancelCount</td>
+                                            <td>@_agentReport.Summary.CancelRate%</td>
+                                            <td>@_agentReport.Summary.RefusalCount</td>
+                                            <td>@_agentReport.Summary.DNCRate%</td>
+                                            <td>@_agentReport.Summary.NrnCount</td>
+                                            <td>@_agentReport.Summary.WillSendCount</td>
+                                            <td>@_agentReport.Summary.MailCount</td>
+                                            <td>@_agentReport.Summary.MaybeSendCount</td>
+                                            <td>@_agentReport.Summary.BillMe</td>
+                                            <td>@_agentReport.Summary.BillMeSum</td>
+                                            <td>@_agentReport.Summary.QuestCount</td>
+                                            <td>@_agentReport.Summary.QuestRate%</td>
+                                            <td>@_agentReport.Summary.TotalTalk</td>
+                                            <td>@_agentReport.Summary.TotalTalkAvg</td>
+                                            <td>@_agentReport.Summary.TotalWrap</td>
+                                            <td>@_agentReport.Summary.TotalWrapAvg</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </section>

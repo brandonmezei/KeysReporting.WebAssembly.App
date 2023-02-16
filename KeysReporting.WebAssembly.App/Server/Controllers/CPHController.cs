@@ -1,6 +1,5 @@
 ﻿using KeysReporting.WebAssembly.App.Server.Services.CPHReport;
 using KeysReporting.WebAssembly.App.Server.Static;
-using KeysReporting.WebAssembly.App.Shared.Auth;
 using KeysReporting.WebAssembly.App.Shared.CPH;
 using KeysReporting.WebAssembly.App.Shared.Lists;
 using Microsoft.AspNetCore.Authorization;

@@ -4,6 +4,8 @@ using KeysReporting.WebAssembly.App.Server.Services;
 using KeysReporting.WebAssembly.App.Server.Services.CPHReport;
 using KeysReporting.WebAssembly.App.Server.Services.Lists;
 using KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI;
+using KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport;
+using KeysReporting.WebAssembly.App.Server.Services.Reports.TermCodes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,7 +32,9 @@ builder.Services.AddScoped<ILiveVoxAPIService, LiveVoxAPIService>();
 builder.Services.AddScoped<ICPHReportService, CPHReportService>();
 builder.Services.AddScoped<ISourceTableService, SourceTableService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IAgentReportService, AgentReportService>();
 builder.Services.AddScoped<IAgentService, AgentService>();
+builder.Services.AddScoped<ITermCodeReportService, TermCodeReportService>();
 
 //Use for Mapper
 builder.Services.AddAutoMapper(typeof(MapperConfig));

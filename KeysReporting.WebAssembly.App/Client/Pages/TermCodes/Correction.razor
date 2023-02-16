@@ -1,0 +1,24 @@
+﻿@page "/TermCodes/Correction"
+@inject IJSRuntime js;
+
+<PageTitle>Keys360 Reporting - Agent Report</PageTitle>
+<PageDisplayTitle Title="Agent Report" Sub="Agent Results Report" />
+<ErrorMessage Message="@_errorMessage" />
+<WarnMessage Message="@_warnMessage" />
+<SuccessMessage Message="@_successMessage" />
+<LoadingMessage Message="@_loadingMessage" />
+
+<section class="section">
+    <div class="columns is-centered">
+        <div class="column is-4">
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                    <div class="tile is-child box" id="divSearch">
+                        <p class="title">Filter(s)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

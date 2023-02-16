@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using KeysReporting.WebAssembly.App.Client;
 using KeysReporting.WebAssembly.App.Client.Providers;
+using KeysReporting.WebAssembly.App.Client.Services.Agent;
 using KeysReporting.WebAssembly.App.Client.Services.Auth;
 using KeysReporting.WebAssembly.App.Client.Services.Base;
 using KeysReporting.WebAssembly.App.Client.Services.CPH;
@@ -30,5 +31,6 @@ builder.Services.AddScoped<ICPHReportService, CPHReportService>();
 builder.Services.AddScoped<ISourceTableService, SourceTableService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAgentService, AgentService>();
+builder.Services.AddScoped<IAgentReportService, AgentReportService>();
 
 await builder.Build().RunAsync();
