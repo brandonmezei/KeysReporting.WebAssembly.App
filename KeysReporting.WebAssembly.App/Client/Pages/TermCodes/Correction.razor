@@ -9,16 +9,101 @@
 <LoadingMessage Message="@_loadingMessage" />
 
 <section class="section">
+
+    @if (_editTermCode)
+    {
+        <EditForm Model="_termCodeEdit" OnValidSubmit="HandleEditTerm">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="modal is-active">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Line Editor: @_termCodeEdit.Account</p>
+                        <div class="delete" aria-label="close" @onclick=@(() => ToggleEdit(null))></div>
+                    </header>
+                    <section class="modal-card-body">
+                        
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button is-success @_buttonClass">Save</button>
+                    </footer>
+                </div>
+            </div>
+        </EditForm>
+    }
+
+
     <div class="columns is-centered">
-        <div class="column is-4">
+        <div class="column @(_termcodeReport?.Count > 0 ? "is-2" : "is-4")">
             <div class="tile is-ancestor">
                 <div class="tile is-parent">
                     <div class="tile is-child box" id="divSearch">
                         <p class="title">Filter(s)</p>
+                        <EditForm Model="_search" OnValidSubmit="HandleSearch">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <div class="field">
+                                <label class="heading">Account</label>
+                                <div class="control">
+                                    <InputText class="input is-danger" @bind-Value="_search.Account" required="required" />
+                                    <ValidationMessage For="@(() => _search.Account)" />
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="buttons">
+                                <button type="submit" class="button is-primary @_buttonClass">Search</button>
+                            </div>
+                        </EditForm>
                     </div>
                 </div>
             </div>
         </div>
+        @if (_termcodeReport?.Count > 0)
+        {
+            <div class="column is-10">
+                <div class="tile is-ancestor">
+                    <div class="tile is-parent">
+                        <div class="tile is-child box">
+                            <p class="title">Term Codes</p>
+                            <table class="table is-striped is-fullwidth" style="font-size:14px">
+                                <thead>
+                                    <tr>
+                                        <td></td>
+                                        <td>Account</td>
+                                        <td>Campaign</td>
+                                        <td>Date</td>
+                                        <td>Term Code</td>
+                                        <td>Alias</td>
+                                        <td>Category</td>
+                                        <td>TotalPTP</td>
+                                        <td>DblDip</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var line in _termcodeReport)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a @onclick=@(() => ToggleEdit(@line.Id))><span class="material-icons">edit</span></a>
+                                            </td>
+                                            <td>@line.Account</td>
+                                            <td>@line.ProjectList.ProjectCode1</td>
+                                            <td>@line.LastWriteTime.Value.ToString("MMM dd yyyy")</td>
+                                            <td>@line.TermCode.TermCode1</td>
+                                            <td>@line.TermCode.Alias</td>
+                                            <td>@line.TermCode.Category.Category</td>
+                                            <td>@line.TotalPtp</td>
+                                            <td>@line.DblDip</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </section>
 

@@ -9,6 +9,7 @@
         public string? TermCode1 { get; set; }
 
         public string? Alias { get; set; }
+        public TermCodeCategoryDto Category { get; set; }
     }
 
 }

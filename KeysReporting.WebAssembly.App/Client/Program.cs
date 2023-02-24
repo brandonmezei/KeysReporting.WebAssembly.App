@@ -6,6 +6,7 @@ using KeysReporting.WebAssembly.App.Client.Services.Auth;
 using KeysReporting.WebAssembly.App.Client.Services.Base;
 using KeysReporting.WebAssembly.App.Client.Services.CPH;
 using KeysReporting.WebAssembly.App.Client.Services.Lists;
+using KeysReporting.WebAssembly.App.Client.Services.TermCodes;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -32,5 +33,6 @@ builder.Services.AddScoped<ISourceTableService, SourceTableService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAgentService, AgentService>();
 builder.Services.AddScoped<IAgentReportService, AgentReportService>();
+builder.Services.AddScoped<ITermCodeService, TermCodeService>();
 
 await builder.Build().RunAsync();

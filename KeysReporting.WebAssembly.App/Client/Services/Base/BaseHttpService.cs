@@ -44,7 +44,7 @@ namespace KeysReporting.WebAssembly.App.Client.Services.Base
                 {
                     return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), _jsonSetting);
                 }
-                catch
+                catch (Exception ex)
                 {
                     return default;
                 }

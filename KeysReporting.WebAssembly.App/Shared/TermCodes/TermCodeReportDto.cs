@@ -9,11 +9,13 @@ namespace KeysReporting.WebAssembly.App.Shared.TermCodes
 {
     public class TermCodeReportDto
     {
+        public long Id { get; set; }
         public string? Account { get; set; }
         public ProjectListDto ProjectList { get; set; }
         public DateTime? LastWriteTime { get; set; }
         public decimal? TotalPtp { get; set; }
         public decimal? DblDip { get; set; }
+        public TermCodeDto TermCode { get; set; }
     }
 
 }
