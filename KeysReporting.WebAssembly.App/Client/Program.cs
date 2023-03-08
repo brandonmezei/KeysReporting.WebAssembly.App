@@ -34,5 +34,6 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAgentService, AgentService>();
 builder.Services.AddScoped<IAgentReportService, AgentReportService>();
 builder.Services.AddScoped<ITermCodeService, TermCodeService>();
+builder.Services.AddScoped<ITermCodeListService, TermCodeListService>();
 
 await builder.Build().RunAsync();

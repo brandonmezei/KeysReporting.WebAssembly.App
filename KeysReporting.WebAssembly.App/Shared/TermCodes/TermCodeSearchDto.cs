@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KeysReporting.WebAssembly.App.Shared.TermCodes
 {
-    public class SearchDto
+    public class TermCodeSearchDto
     {
         public string? Account { get; set; }
     }

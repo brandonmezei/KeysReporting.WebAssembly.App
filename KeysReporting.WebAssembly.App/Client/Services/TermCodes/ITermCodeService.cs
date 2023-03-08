@@ -4,6 +4,8 @@ namespace KeysReporting.WebAssembly.App.Client.Services.TermCodes
 {
     public interface ITermCodeService
     {
-        Task<List<TermCodeReportDto>> GetTermCodeReportAsync(SearchDto searchDto);
+        Task<List<TermCodeReportDto>> GetTermCodeReportAsync(TermCodeSearchDto searchDto);
+
+        Task<List<TermCodeReportDto>> UpdateTermCodeReportAsync(TermCodeEditDto editDto);
     }
 }

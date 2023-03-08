@@ -35,6 +35,7 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAgentReportService, AgentReportService>();
 builder.Services.AddScoped<IAgentService, AgentService>();
 builder.Services.AddScoped<ITermCodeReportService, TermCodeReportService>();
+builder.Services.AddScoped<ITermCodeService, TermCodeService>();
 
 //Use for Mapper
 builder.Services.AddAutoMapper(typeof(MapperConfig));

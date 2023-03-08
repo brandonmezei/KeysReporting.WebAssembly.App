@@ -17,7 +17,7 @@ namespace KeysReporting.WebAssembly.App.Client.Services.TermCodes
             _localStorage = localStorage;
         }
 
-        public async Task<List<TermCodeReportDto>> GetTermCodeReportAsync(SearchDto searchDto)
+        public async Task<List<TermCodeReportDto>> GetTermCodeReportAsync(TermCodeSearchDto searchDto)
         {
             if (!await _authenticationService.CheckLogin())
                 return null;
@@ -25,6 +25,16 @@ namespace KeysReporting.WebAssembly.App.Client.Services.TermCodes
             await GetBearerToken();
 
             return await SendRequest<List<TermCodeReportDto>>("Api/TermCodes/TermCodeReport", HttpMethod.Post, searchDto);
+        }
+
+        public async Task<List<TermCodeReportDto>> UpdateTermCodeReportAsync(TermCodeEditDto editDto)
+        {
+            if (!await _authenticationService.CheckLogin())
+                return null;
+
+            await GetBearerToken();
+
+            return await SendRequest<List<TermCodeReportDto>>("Api/TermCodes/TermCodeUpdate", HttpMethod.Post, editDto);
         }
     }
 }

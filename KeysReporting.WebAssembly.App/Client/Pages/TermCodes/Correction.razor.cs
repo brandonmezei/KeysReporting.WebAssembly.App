@@ -4,13 +4,21 @@ using KeysReporting.WebAssembly.App.Client.Static;
 using KeysReporting.WebAssembly.App.Client.Services.TermCodes;
 using System.Runtime;
 using Microsoft.JSInterop;
+using KeysReporting.WebAssembly.App.Client.Services.Auth;
+using KeysReporting.WebAssembly.App.Client.Services.Lists;
 
 namespace KeysReporting.WebAssembly.App.Client.Pages.TermCodes
 {
     public partial class Correction
     {
         [Inject]
+        private IAuthenticationService AuthService { get; set; }
+
+        [Inject]
         private ITermCodeService TermCodeService { get; set; }
+
+        [Inject]
+        private ITermCodeListService TermCodeListService { get; set; }
 
         [Inject]
         private NavigationManager NavManager { get; set; }
@@ -18,9 +26,10 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.TermCodes
         [Inject]
         private IJSRuntime JS { get; set; }
 
-        private SearchDto _search = new();
+        private TermCodeSearchDto _search = new();
         private List<TermCodeReportDto> _termcodeReport = new();
-        private TermCodeReportDto _termCodeEdit;
+        private TermCodeEditDto _termCodeEdit;
+        private List<TermCodeDto> _termCodeList = new();
 
 
         public string? _buttonClass;
@@ -30,6 +39,21 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.TermCodes
         public string? _successMessage;
 
         public bool _editTermCode;
+
+        protected override async Task OnInitializedAsync()
+        {
+            if (!await AuthService.CheckLogin())
+                NavManager.NavigateTo("/");
+
+            try
+            {
+                _termCodeList = await TermCodeListService.GetTermCodesAsync();
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+        }
 
         private async Task HandleSearch()
         {
@@ -57,7 +81,36 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.TermCodes
 
         public async Task HandleEditTerm()
         {
+            _buttonClass = CSSClasses.ButtonSpin;
+            _loadingMessage = Messages.SavingLine;
+            _errorMessage = string.Empty;
 
+            try
+            {
+                _termcodeReport = await TermCodeService.UpdateTermCodeReportAsync(_termCodeEdit);
+                ToggleEdit(null);
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+
+            _loadingMessage = string.Empty;
+            _buttonClass = string.Empty;
+        }
+
+        public async Task HandleTermCodeChange(ChangeEventArgs e)
+        {
+            try
+            {
+                _termCodeEdit.TermCodeID = string.IsNullOrEmpty(e.Value.ToString())
+                    ? null
+                    : long.Parse(e.Value.ToString());
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
         }
 
         private void ToggleEdit(long? id)
@@ -65,9 +118,24 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.TermCodes
             _editTermCode = !_editTermCode;
 
             if (id.HasValue && _termcodeReport.Any())
-                _termCodeEdit = _termcodeReport
+            {
+                var editRecord = _termcodeReport
                     .Where(x => x.Id == id)
                     .FirstOrDefault();
+
+                if (editRecord != null)
+                {
+                    _termCodeEdit = new()
+                    {
+                        Id = editRecord.Id,
+                        Account = editRecord.Account,
+                        TermCodeID = editRecord.TermCode.Id,
+                        TotalPtp = editRecord.TotalPtp,
+                        DblDip = editRecord.DblDip
+                    };
+                }
+
+            }
         }
     }
 }

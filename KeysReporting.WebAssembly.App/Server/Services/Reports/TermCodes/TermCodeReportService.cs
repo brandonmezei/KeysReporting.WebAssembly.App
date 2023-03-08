@@ -19,7 +19,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.TermCodes
             _mapper = mapper;
         }
 
-        public async Task<List<TermCodeReportDto>> GetReportAsync(SearchDto searchDto)
+        public async Task<List<TermCodeReportDto>> GetReportAsync(TermCodeSearchDto searchDto)
         {
             if (string.IsNullOrEmpty(searchDto.Account))
                 return new List<TermCodeReportDto>();
@@ -48,7 +48,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.TermCodes
 
             await _callDispositionContext.SaveChangesAsync();
 
-            return await GetReportAsync(new SearchDto { Account = editLine.Account });
+            return await GetReportAsync(new TermCodeSearchDto { Account = editLine.Account });
         }
     }
 }

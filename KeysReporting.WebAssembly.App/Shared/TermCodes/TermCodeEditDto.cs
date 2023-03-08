@@ -12,6 +12,8 @@ namespace KeysReporting.WebAssembly.App.Shared.TermCodes
         [Required]
         public long Id { get; set; }
 
+        public string? Account { get; set; }
+
         [Required]
         [Range(0, long.MaxValue)]
         public long? TermCodeID { get; set; }

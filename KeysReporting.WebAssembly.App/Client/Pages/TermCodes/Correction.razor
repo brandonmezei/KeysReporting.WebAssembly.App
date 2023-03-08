@@ -23,7 +23,48 @@
                         <div class="delete" aria-label="close" @onclick=@(() => ToggleEdit(null))></div>
                     </header>
                     <section class="modal-card-body">
-                        
+                        <div class="field">
+                            <label class="heading">Term Code</label>
+                            <div class="control">
+                                <div class="select is-fullwidth is-danger">
+                                    <select class="form-select" @onchange="HandleTermCodeChange">
+                                        <option value="">-- Term Code --</option>
+                                        @foreach (var termCode in _termCodeList)
+                                        {
+                                            if (_termCodeEdit.TermCodeID.HasValue && _termCodeEdit.TermCodeID == termCode.Id)
+                                            {
+                                                <option value="@termCode.Id" selected="selected">@termCode.Alias</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@termCode.Id">@termCode.Alias</option>
+                                            }
+                                        }
+                                    </select>
+                                    <ValidationMessage For="@(() => _termCodeEdit.TermCodeID)" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="level">
+                            <div class="level-item has-text-centered">
+                                <div class="field">
+                                    <label class="heading">Total PTP</label>
+                                    <div class="control">
+                                        <InputNumber class="input is-primary" @bind-Value="_termCodeEdit.TotalPtp" />
+                                        <ValidationMessage For="@(() => _termCodeEdit.TotalPtp)" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div class="field">
+                                    <label class="heading">Double Dip</label>
+                                    <div class="control">
+                                        <InputNumber class="input is-primary" @bind-Value="_termCodeEdit.DblDip" />
+                                        <ValidationMessage For="@(() => _termCodeEdit.DblDip)" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </section>
                     <footer class="modal-card-foot">
                         <button class="button is-success @_buttonClass">Save</button>
