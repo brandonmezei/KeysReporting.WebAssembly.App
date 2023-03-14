@@ -4,7 +4,10 @@ using KeysReporting.WebAssembly.App.Shared.Lists;
 using KeysReporting.WebAssembly.App.Shared.TermCodes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.SqlServer.Server;
+using System.Runtime.InteropServices;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KeysReporting.WebAssembly.App.Server.Services.Reports.TermCodes
 {
@@ -17,6 +20,44 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.TermCodes
         {
             _callDispositionContext = callDispositionContext;
             _mapper = mapper;
+        }
+
+        public async Task<List<TermCodeReportDto>> CreateTermAsync(TermCodeAddDto termCodeAddDto)
+        {
+            var ftpFile = await _callDispositionContext.Ftpcontrols
+                .Where(x => x.FileName.ToLower() == "correction" && x.LastWriteTime == termCodeAddDto.FileDate)
+                .FirstOrDefaultAsync();
+
+            if (ftpFile == null)
+            {
+                ftpFile = new Ftpcontrol
+                {
+                    FileName = "Correction",
+                    LastWriteTime = termCodeAddDto.FileDate.Value,
+                    Result = "OK",
+                    RecordCount = 0
+                };
+
+                _callDispositionContext.Ftpcontrols.Add(ftpFile);
+            }
+
+            var sourceTable = await _callDispositionContext.CallDispositions
+                .Include(x => x.FkSourceTableNavigation)
+                .Where(x => x.FkProjectCode == termCodeAddDto.ProjectID && x.FkSourceTable.HasValue)
+                .FirstOrDefaultAsync();
+
+            var newCallFile = new CallDisposition() {
+                FkClientNavigation = await _callDispositionContext.Clients.Where(x => x.ClientName.ToLower() == "keys360").FirstOrDefaultAsync(),
+                FkSourceTableNavigation = sourceTable.FkSourceTableNavigation,
+                UpdateDate = DateTime.Now,
+                UpdateId = 1
+            };
+
+            ftpFile.CallDispositions.Add(_mapper.Map(termCodeAddDto, newCallFile));
+
+            await _callDispositionContext.SaveChangesAsync();
+
+            return await GetReportAsync(new TermCodeSearchDto { Account = termCodeAddDto.Account });
         }
 
         public async Task<List<TermCodeReportDto>> GetReportAsync(TermCodeSearchDto searchDto)
@@ -35,7 +76,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.TermCodes
                 );
         }
 
-        public async Task<List<TermCodeReportDto>> UpdateReport(TermCodeEditDto editDto)
+        public async Task<List<TermCodeReportDto>> UpdateReportAsync(TermCodeEditDto editDto)
         {
             var editLine = await _callDispositionContext.CallDispositions
                 .Where(x => x.Id == editDto.Id)

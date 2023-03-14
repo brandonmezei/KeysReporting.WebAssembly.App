@@ -61,7 +61,21 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
         {
             try
             {
-                return Ok(await _termCodeReportService.UpdateReport(editDto));
+                return Ok(await _termCodeReportService.UpdateReportAsync(editDto));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"{Messages.SomethingWentWrong}{nameof(TermCodesController)}{ex.Message}");
+                return Problem($"{Messages.SomethingWentWrong}{nameof(TermCodesController)}{ex.Message}");
+            }
+        }
+
+        [HttpPost("TermCodeAdd")]
+        public async Task<ActionResult<List<TermCodeReportDto>>> AddTermCode(TermCodeAddDto termCodeAddDto)
+        {
+            try
+            {
+                return Ok(await _termCodeReportService.CreateTermAsync(termCodeAddDto));
             }
             catch (Exception ex)
             {

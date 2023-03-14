@@ -14,5 +14,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.CPHReport
         Task<CPHReportDto> DeleteProjectAsync(DeleteProjectDto deleteProjectDto);
         Task<CPHReportDto> EditCPH(EditCPHDto editCPHDto);
 
+        Task<byte[]> GetAllCPHAsync(SearchDto searchDto);
+
     }
 }

@@ -18,5 +18,6 @@ namespace KeysReporting.WebAssembly.App.Client.Static
         public const string DeleteProject = "Deleting Project...";
         public const string NoNegatives = "Cannot use negative numbers...";
         public const string SavingCPH = "Saving CPH...";
+        public const string Downloading = "Downloading Report...";
     }
 }

@@ -1,9 +1,11 @@
 ﻿using KeysReporting.WebAssembly.App.Server.Services.CPHReport;
 using KeysReporting.WebAssembly.App.Server.Static;
 using KeysReporting.WebAssembly.App.Shared.CPH;
+using KeysReporting.WebAssembly.App.Shared.File;
 using KeysReporting.WebAssembly.App.Shared.Lists;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mime;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -102,6 +104,25 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
             try
             {
                 return Ok(await _CPHReport.EditCPH(editCPHDto));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+                return Problem($"{Messages.SomethingWentWrong}{nameof(AuthenticationController)}{ex.Message}");
+            }
+        }
+
+        [HttpPost("GetFullReport")]
+        public async Task<ActionResult<ServiceFileDto>> GetFullReport(SearchDto searchDto)
+        {
+            try
+            {
+                var response = await _CPHReport.GetAllCPHAsync(searchDto);
+
+                if (response != null)
+                    return Ok(new ServiceFileDto() { Name = $"CPHReport_{ searchDto.SearchDate.ToString("MMddyyyy") }.xlsx", Content = response } );
+               
+                return Ok();
             }
             catch (Exception ex)
             {

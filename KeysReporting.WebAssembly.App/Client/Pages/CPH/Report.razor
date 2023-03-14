@@ -140,7 +140,10 @@
                                 </div>
                             </div>
                             <hr />
-                            <button class="button is-primary @_buttonClass">Search</button>
+                            <div class="buttons">
+                                <button class="button is-primary @_buttonClass">Search</button>
+                                <a class="button is-warning @_buttonClass" @onclick=@(() => DownloadReport())>Download</a>
+                            </div>
                         </EditForm>
                     </div>
                 </div>

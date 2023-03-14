@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using ClosedXML.Excel;
 using KeysReporting.WebAssembly.App.Server.Data;
 using KeysReporting.WebAssembly.App.Shared.CPH;
 using KeysReporting.WebAssembly.App.Shared.Lists;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
 
 namespace KeysReporting.WebAssembly.App.Server.Services.CPHReport
@@ -64,6 +66,64 @@ namespace KeysReporting.WebAssembly.App.Server.Services.CPHReport
             }
         }
 
+        private async Task<byte[]> CreateFile(List<CPHReportDto> reportData)
+        {
+            var ms = new MemoryStream();
+            var wb = new XLWorkbook();
+
+            wb.Worksheets.Add("Report");
+
+            var ws = wb.Worksheet("Report");
+
+            //Generate Columns
+            ws.Row(1).Cell(1).Value = "Campaign";
+            ws.Row(2).Cell(2).Value = "CPH";
+
+            var cellCount = 3;
+            var rowCount = 3;
+
+            //Build Columns
+            foreach (var line in reportData.FirstOrDefault().CPHLines.OrderBy(x => x.Series))
+            {
+                ws.Row(1).Cell(cellCount).Value = line.Series.ToString("HH:mm");
+                ws.Range(ws.Row(1).Cell(cellCount), ws.Row(1).Cell(cellCount + 1)).Merge();
+                ws.Range(ws.Row(1).Cell(cellCount), ws.Row(1).Cell(cellCount + 1)).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                ws.Row(2).Cell(cellCount).Value = "Agent";
+                ws.Row(2).Cell(cellCount + 1).Value = "Contact";
+                cellCount += 2;
+            }
+
+            ws.Row(1).Cell(cellCount).Value = "Total";
+            ws.Row(1).Cell(cellCount + 1).Value = "Hours";
+
+            foreach (var line in reportData)
+            {
+                ws.Row(rowCount).Cell(1).Value = line.Project.ProjectCode1;
+                ws.Row(rowCount).Cell(2).Value = line.CPH;
+
+                cellCount = 3;
+
+                foreach (var reportLine in line.CPHLines.OrderBy(x => x.Series))
+                {
+                    ws.Row(rowCount).Cell(cellCount).Value = reportLine.Agent;
+                    ws.Row(rowCount).Cell(cellCount + 1).Value = reportLine.Contact;
+                    cellCount += 2;
+                }
+
+                ws.Row(rowCount).Cell(cellCount).Value = line.CPHLines.OrderBy(x => x.Series).ToList()[line.CPHLines.Count() - 1].Contact;
+                ws.Row(rowCount).Cell(cellCount + 1).Value = Math.Round((line.CPHLines.OrderBy(x => x.Series).ToList()[line.CPHLines.Count() - 1].Contact / (double)line.CPH) / 0.25) * 0.25;
+                rowCount += 1;
+            }
+
+            ws.SheetView.FreezeRows(1);
+            ws.SheetView.FreezeColumns(1);
+
+            wb.SaveAs(ms);
+            ms.Position = 0;
+
+            return ms.ToArray();
+        }
+
         public async Task<List<ProjectListDto>> GetProjectListAsync(DateTime reportTime)
         {
             await CreateHeader(reportTime);
@@ -103,7 +163,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.CPHReport
 
             returnMap.Project = _mapper.Map<ProjectListDto>(dbModelLines.FirstOrDefault()?.FkProject);
             returnMap.CPH = dbModelHead?.CphprojectControls.FirstOrDefault()?.Cph;
-            returnMap.TotalHours = dbModelLines[^1]?.Contact;
+            returnMap.TotalHours = dbModelLines.Any() ? dbModelLines[^1]?.Contact : null;
             returnMap.Completes = _callDispositionContext.CallDispositions
                 .Include(x => x.FkFtpfileNavigation)
                 .Where(x => x.FkFtpfileNavigation.LastWriteTime.Date == searchDto.SearchDate
@@ -230,6 +290,27 @@ namespace KeysReporting.WebAssembly.App.Server.Services.CPHReport
             await Recalculate(dbModel.FkCphheaderNavigation.Id, dbModel.FkProjectCode);
 
             return await GetReportAsync(new SearchDto { SearchDate = editCPHDto.SearchDate, ProjectID = editCPHDto.ProjectID });
+        }
+
+        public async Task<byte[]> GetAllCPHAsync(SearchDto searchDto)
+        {
+            var report = new List<CPHReportDto>();
+
+            await CreateHeader(searchDto.SearchDate);
+
+            var projectList = await GetProjectListAsync(searchDto.SearchDate);
+
+            if (projectList == null || !projectList.Any())
+                return null;
+
+            foreach (var project in projectList)
+            {
+                searchDto.ProjectID = project.Id;
+
+                report.Add(await GetReportAsync(searchDto));
+            }
+
+            return await CreateFile(report);
         }
     }
 }

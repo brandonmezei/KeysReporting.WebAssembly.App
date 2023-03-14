@@ -3,6 +3,7 @@ using KeysReporting.WebAssembly.App.Client.Services.Auth;
 using KeysReporting.WebAssembly.App.Client.Services.Base;
 using KeysReporting.WebAssembly.App.Shared.Auth;
 using KeysReporting.WebAssembly.App.Shared.CPH;
+using KeysReporting.WebAssembly.App.Shared.File;
 using KeysReporting.WebAssembly.App.Shared.Lists;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -79,6 +80,16 @@ namespace KeysReporting.WebAssembly.App.Client.Services.CPH
             await GetBearerToken();
 
             return await SendRequest<CPHReportDto>("Api/CPH/EditCPH", HttpMethod.Post, editCPHDto);
+        }
+
+        public async Task<ServiceFileDto> DownloadFile(SearchDto searchDto)
+        {
+            if (!await _authenticationService.CheckLogin())
+                return null;
+
+            await GetBearerToken();
+
+            return await SendRequest<ServiceFileDto>("Api/CPH/GetFullReport", HttpMethod.Post, searchDto);
         }
     }
 }

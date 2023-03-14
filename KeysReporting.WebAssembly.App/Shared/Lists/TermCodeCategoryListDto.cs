@@ -1,6 +1,6 @@
-﻿namespace KeysReporting.WebAssembly.App.Shared.TermCodes
+﻿namespace KeysReporting.WebAssembly.App.Shared.Lists
 {
-    public class TermCodeCategoryDto
+    public class TermCodeCategoryListDto
     {
         public long Id { get; set; }
 

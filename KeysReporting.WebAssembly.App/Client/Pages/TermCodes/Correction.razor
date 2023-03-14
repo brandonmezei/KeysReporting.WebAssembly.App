@@ -74,28 +74,122 @@
         </EditForm>
     }
 
-
     <div class="columns is-centered">
         <div class="column @(_termcodeReport?.Count > 0 ? "is-2" : "is-4")">
             <div class="tile is-ancestor">
                 <div class="tile is-parent">
                     <div class="tile is-child box" id="divSearch">
-                        <p class="title">Filter(s)</p>
-                        <EditForm Model="_search" OnValidSubmit="HandleSearch">
-                            <DataAnnotationsValidator />
-                            <ValidationSummary />
-                            <div class="field">
-                                <label class="heading">Account</label>
-                                <div class="control">
-                                    <InputText class="input is-danger" @bind-Value="_search.Account" required="required" />
-                                    <ValidationMessage For="@(() => _search.Account)" />
+                        @if (_newTermCode)
+                        {
+                            <p class="title">New File</p>
+                            <EditForm Model="_search" OnValidSubmit="HandleNewTerm">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+                                <div class="field">
+                                    <label class="heading">Agent</label>
+                                    <div class="control">
+                                        <div class="select is-fullwidth is-danger">
+                                            <select class="form-select" @onchange="AgentChange">
+                                                <option value="">-- Agent --</option>
+                                                @foreach (var agent in _agentList)
+                                                {
+                                                    <option value="@agent.Id">@agent.AgentName</option>
+                                                }
+                                            </select>
+                                            <ValidationMessage For="@(() => _termCodeAdd.AgentID)" />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <hr />
-                            <div class="buttons">
-                                <button type="submit" class="button is-primary @_buttonClass">Search</button>
-                            </div>
-                        </EditForm>
+                                <div class="field">
+                                    <label class="heading">Project</label>
+                                    <div class="control">
+                                        <div class="select is-fullwidth is-danger">
+                                            <select class="form-select" @onchange="ProjectChange">
+                                                <option value="">-- Project --</option>
+                                                @foreach (var project in _projectList)
+                                                {
+                                                    <option value="@project.Id">@project.ProjectCode1</option>
+                                                }
+                                            </select>
+                                            <ValidationMessage For="@(() => _termCodeAdd.ProjectID)" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">Term Code</label>
+                                    <div class="control">
+                                        <div class="select is-fullwidth is-danger">
+                                            <select class="form-select" @onchange="HandleTermCodeNewChange">
+                                                <option value="">-- Term Code --</option>
+                                                @foreach (var termCode in _termCodeList)
+                                                {
+                                                    <option value="@termCode.Id">@termCode.Alias</option>
+                                                }
+                                            </select>
+                                            <ValidationMessage For="@(() => _termCodeAdd.TermCodeID)" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">Account</label>
+                                    <div class="control">
+                                        <InputText class="input is-danger" @bind-Value="_termCodeAdd.Account" required="required" />
+                                        <ValidationMessage For="@(() => _termCodeAdd.Account)" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">Date</label>
+                                    <div class="control">
+                                        <InputDate class="input is-danger" @bind-Value="_termCodeAdd.FileDate" required="required" />
+                                        <ValidationMessage For="@(() => _termCodeAdd.FileDate)" />
+                                    </div>
+                                </div>
+                                <div class="level">
+                                    <div class="level-item has-text-centered">
+                                        <div class="field">
+                                            <label class="heading">Total PTP</label>
+                                            <div class="control">
+                                                <InputNumber class="input is-primary" @bind-Value="_termCodeAdd.TotalPtp" />
+                                                <ValidationMessage For="@(() => _termCodeAdd.TotalPtp)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="level-item has-text-centered">
+                                        <div class="field">
+                                            <label class="heading">Double Dip</label>
+                                            <div class="control">
+                                                <InputNumber class="input is-primary" @bind-Value="_termCodeAdd.DblDip" />
+                                                <ValidationMessage For="@(() => _termCodeAdd.DblDip)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="buttons">
+                                    <button type="submit" class="button is-success @_buttonClass">Save</button>
+                                </div>
+                            </EditForm>
+                        }
+                        else
+                        {
+                            <p class="title">Filter(s)</p>
+                            <EditForm Model="_search" OnValidSubmit="HandleSearch">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+                                <div class="field">
+                                    <label class="heading">Account</label>
+                                    <div class="control">
+                                        <InputText class="input is-danger" @bind-Value="_search.Account" required="required" />
+                                        <ValidationMessage For="@(() => _search.Account)" />
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="buttons">
+                                    <button type="submit" class="button is-primary @_buttonClass">Search</button>
+                                    <a class="button is-success @_buttonClass" @onclick=@(() => ToggleNew())>New</a>
+                                </div>
+                            </EditForm>
+                        }
                     </div>
                 </div>
             </div>

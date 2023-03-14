@@ -4,7 +4,10 @@ using KeysReporting.WebAssembly.App.Client.Static;
 using KeysReporting.WebAssembly.App.Shared.CPH;
 using KeysReporting.WebAssembly.App.Shared.Lists;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.JSInterop;
+using System.Linq.Expressions;
+using System.Net.Mime;
 
 namespace KeysReporting.WebAssembly.App.Client.Pages.CPH
 {
@@ -261,6 +264,28 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.CPH
         private async Task JumpToNow()
         {
             await JS.InvokeVoidAsync("scrollIntoView", "currentRow");
+        }
+
+        private async Task DownloadReport()
+        {
+            _buttonClass = CSSClasses.ButtonSpin;
+            _loadingMessage = Messages.Downloading;
+            _errorMessage = string.Empty;
+
+            try
+            {
+                var response = await ReportService.DownloadFile(_search);
+
+                if (response != null)
+                    await JS.InvokeVoidAsync("SaveByteArray", response.Name, "application/octet-stream", response.Content);
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+
+            _loadingMessage = string.Empty;
+            _buttonClass = string.Empty;
         }
         #endregion
 

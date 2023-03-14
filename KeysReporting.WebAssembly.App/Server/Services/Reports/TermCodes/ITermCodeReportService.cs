@@ -6,6 +6,8 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.TermCodes
     {
         Task<List<TermCodeReportDto>> GetReportAsync(TermCodeSearchDto searchDto);
 
-        Task<List<TermCodeReportDto>> UpdateReport(TermCodeEditDto editDto);
+        Task<List<TermCodeReportDto>> UpdateReportAsync(TermCodeEditDto editDto);
+
+        Task<List<TermCodeReportDto>> CreateTermAsync(TermCodeAddDto termCodeAddDto);
     }
 }

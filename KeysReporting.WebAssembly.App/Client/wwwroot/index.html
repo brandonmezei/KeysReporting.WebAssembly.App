@@ -35,6 +35,17 @@
     <script>navigator.serviceWorker.register('service-worker.js');</script>
 
     <script>
+
+        function SaveByteArray(reportName, reportType, byte) {
+            var blob = new Blob([byte], { type: reportType });
+
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = reportName;
+
+            link.click();
+        };
+
         function scrollIntoView(elementId) {
             var elem = document.getElementById(elementId);
 

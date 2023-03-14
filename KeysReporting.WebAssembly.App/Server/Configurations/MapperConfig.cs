@@ -22,7 +22,7 @@ namespace KeysReporting.WebAssembly.App.Server.Configurations
             CreateMap<Cphline, CPHReportLineDto>();
 
             //TermCode
-            CreateMap<TermCodeCategory, TermCodeCategoryDto>();
+            CreateMap<TermCodeCategory, TermCodeCategoryListDto>();
             CreateMap<TermCode, TermCodeDto>()
                 .ForMember(x => x.Category, q => q
                     .MapFrom(mapper => mapper.FkTermCodeCategoryNavigation));
@@ -38,6 +38,16 @@ namespace KeysReporting.WebAssembly.App.Server.Configurations
             CreateMap<TermCodeEditDto, CallDisposition>()
                 .ForMember(x => x.FkTermCode, q => q
                     .MapFrom(mapper => mapper.TermCodeID));
+
+
+            CreateMap<TermCodeAddDto, CallDisposition>()
+                 .ForMember(x => x.FkAgent, q => q
+                    .MapFrom(mapper => mapper.AgentID))
+                 .ForMember(x => x.FkTermCode, q => q
+                    .MapFrom(mapper => mapper.TermCodeID))
+                 .ForMember(x => x.FkProjectCode, q => q
+                    .MapFrom(mapper => mapper.ProjectID))
+                ;
         }
     }
 }
