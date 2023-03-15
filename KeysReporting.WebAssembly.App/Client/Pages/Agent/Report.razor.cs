@@ -6,6 +6,7 @@ using KeysReporting.WebAssembly.App.Client.Static;
 using KeysReporting.WebAssembly.App.Shared.Agent;
 using KeysReporting.WebAssembly.App.Shared.Lists;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
 {
@@ -29,6 +30,9 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
 
         [Inject]
         private NavigationManager NavManager { get; set; }
+
+        [Inject]
+        private IJSRuntime JS { get; set; }
 
         private SearchDto _search = new();
         private AgentReportDto _agentReport;
@@ -78,6 +82,72 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
                     ? string.Empty
                     : Messages.NothingFound;
                     
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+
+            _loadingMessage = string.Empty;
+            _buttonClass = string.Empty;
+        }
+
+        private async Task HandleDownloadReport()
+        {
+            _buttonClass = CSSClasses.ButtonSpin;
+            _loadingMessage = Messages.Downloading;
+            _errorMessage = string.Empty;
+
+            try
+            {
+                var response = await AgentReportService.DownloadReportFileAsync(_search);
+
+                if (response != null)
+                    await JS.InvokeVoidAsync("SaveByteArray", response.Name, "application/octet-stream", response.Content);
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+
+            _loadingMessage = string.Empty;
+            _buttonClass = string.Empty;
+        }
+
+        private async Task HandleDownloadTotalReport()
+        {
+            _buttonClass = CSSClasses.ButtonSpin;
+            _loadingMessage = Messages.Downloading;
+            _errorMessage = string.Empty;
+
+            try
+            {
+                var response = await AgentReportService.DownloadTotalReportFileAsync(_search);
+
+                if (response != null)
+                    await JS.InvokeVoidAsync("SaveByteArray", response.Name, "application/octet-stream", response.Content);
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+
+            _loadingMessage = string.Empty;
+            _buttonClass = string.Empty;
+        }
+
+        private async Task HandleDownloadCompareTotalReport()
+        {
+            _buttonClass = CSSClasses.ButtonSpin;
+            _loadingMessage = Messages.Downloading;
+            _errorMessage = string.Empty;
+
+            try
+            {
+                var response = await AgentReportService.DownloadCompareTotalReportFileAsync(_search);
+
+                if (response != null)
+                    await JS.InvokeVoidAsync("SaveByteArray", response.Name, "application/octet-stream", response.Content);
             }
             catch
             {

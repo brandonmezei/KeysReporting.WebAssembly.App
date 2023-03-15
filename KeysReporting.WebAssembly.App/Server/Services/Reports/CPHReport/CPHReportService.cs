@@ -4,7 +4,6 @@ using ClosedXML.Excel;
 using KeysReporting.WebAssembly.App.Server.Data;
 using KeysReporting.WebAssembly.App.Shared.CPH;
 using KeysReporting.WebAssembly.App.Shared.Lists;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
 
 namespace KeysReporting.WebAssembly.App.Server.Services.CPHReport

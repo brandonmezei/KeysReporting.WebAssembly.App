@@ -1,13 +1,7 @@
 ﻿using AutoMapper;
 using KeysReporting.WebAssembly.App.Server.Data;
-using KeysReporting.WebAssembly.App.Shared.Lists;
 using KeysReporting.WebAssembly.App.Shared.TermCodes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.SqlServer.Server;
-using System.Runtime.InteropServices;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KeysReporting.WebAssembly.App.Server.Services.Reports.TermCodes
 {

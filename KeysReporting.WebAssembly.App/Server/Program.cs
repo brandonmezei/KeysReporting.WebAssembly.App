@@ -6,6 +6,7 @@ using KeysReporting.WebAssembly.App.Server.Services.Lists;
 using KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI;
 using KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport;
 using KeysReporting.WebAssembly.App.Server.Services.Reports.TermCodes;
+using KeysReporting.WebAssembly.App.Server.Services.System.FTP;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -36,6 +37,7 @@ builder.Services.AddScoped<IAgentReportService, AgentReportService>();
 builder.Services.AddScoped<IAgentService, AgentService>();
 builder.Services.AddScoped<ITermCodeReportService, TermCodeReportService>();
 builder.Services.AddScoped<ITermCodeService, TermCodeService>();
+builder.Services.AddScoped<IFTPService, FTPService>();
 
 //Use for Mapper
 builder.Services.AddAutoMapper(typeof(MapperConfig));

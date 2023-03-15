@@ -98,6 +98,9 @@
                             <hr />
                             <div class="buttons">
                                 <button type="submit" class="button is-primary @_buttonClass">Search</button>
+                                <a class="button is-success @_buttonClass" @onclick=@(() => HandleDownloadReport())>Download</a>
+                                <a class="button is-danger @_buttonClass" @onclick=@(() => HandleDownloadTotalReport())>Totals</a>
+                                <a class="button is-dark @_buttonClass" @onclick=@(() => HandleDownloadCompareTotalReport())>Totals Compare</a>
                             </div>
                         </EditForm>
                     </div>

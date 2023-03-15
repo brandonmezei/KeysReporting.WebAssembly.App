@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
+using ClosedXML.Excel;
 using KeysReporting.WebAssembly.App.Server.Data;
+using KeysReporting.WebAssembly.App.Server.Providers;
 using KeysReporting.WebAssembly.App.Shared.Agent;
+using KeysReporting.WebAssembly.App.Shared.Lists;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport
 {
@@ -15,6 +19,87 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport
             _callDispositionContext = callDispositionContext;
             _mapper = mapper;
         }
+
+        private async Task<IQueryable<CallDisposition>> GetQueryAsync(SearchDto searchDto)
+        {
+            //Prevent Entire DB selects
+            if (string.IsNullOrEmpty(searchDto.Client) && !searchDto.SourceTable.HasValue && !searchDto.Project.HasValue
+                && !searchDto.Agent.HasValue && !searchDto.StartDate.HasValue && !searchDto.EndDate.HasValue)
+                return null;
+
+            //Filter Out Bad Codes
+            var query = _callDispositionContext.CallDispositions
+                .Include(x => x.FkAgentNavigation)
+                .Include(x => x.FkClientNavigation)
+                .Include(x => x.FkFtpfileNavigation)
+                .Include(x => x.FkProjectCodeNavigation)
+                .Include(x => x.FkTermCodeNavigation.FkTermCodeCategoryNavigation)
+                .Include(x => x.FkSourceTableNavigation)
+                .Where(x => x.FkTermCodeNavigation.Alias != "24 BUSY Busy Signal"
+                    && x.FkTermCodeNavigation.Alias != "55 ANSM Answering Machine Hangup"
+                    && x.FkTermCodeNavigation.Alias != "66 GENCB Dead Air"
+                    && x.FkTermCodeNavigation.Alias != "66 GENCB No Answer"
+                    && x.FkTermCodeNavigation.Alias != "67 PUBCB Global Callback"
+                    && x.FkTermCodeNavigation.Alias != "99 PRICB Personal Callback"
+                 );
+
+            query = searchDto.StartDate.HasValue
+                ? query.Where(x => x.FkFtpfileNavigation.LastWriteTime >= searchDto.StartDate)
+                : query;
+
+            query = searchDto.EndDate.HasValue
+                ? query.Where(x => x.FkFtpfileNavigation.LastWriteTime < searchDto.EndDate.Value.AddDays(1))
+                : query;
+
+            query = searchDto.Agent.HasValue
+                ? query.Where(x => x.FkAgent == searchDto.Agent)
+                : query;
+
+            query = searchDto.SourceTable.HasValue
+               ? query.Where(x => x.FkSourceTable == searchDto.SourceTable)
+               : query;
+
+            query = string.IsNullOrEmpty(searchDto.Client)
+               ? query
+               : query.Where(x => x.FkSourceTableNavigation.SourceTable1.ToLower() == searchDto.Client.ToLower());
+
+            query = searchDto.Project.HasValue
+                    ? query.Where(x => x.FkProjectCode == searchDto.Project)
+                    : query;
+
+            return query;
+        }
+
+        private async Task<List<ProjectListDto>> GetProjectCodesAsync(SearchDto searchDto)
+        {
+            var query = await GetQueryAsync(searchDto);
+
+            if (query == null)
+                return new List<ProjectListDto>();
+
+            return _mapper.Map<List<ProjectListDto>>(query.Select(x => x.FkProjectCodeNavigation).Distinct().ToList());
+        }
+
+        private async Task<List<AgentListDto>> GetAgentsAsync(SearchDto searchDto)
+        {
+            var query = await GetQueryAsync(searchDto);
+
+            if (query == null)
+                return new List<AgentListDto>();
+
+            return _mapper.Map<List<AgentListDto>>(query.Select(x => x.FkAgentNavigation).Distinct().ToList());
+        }
+
+        private async Task<List<SourceTableListDto>> GetSourceTableAsync(SearchDto searchDto)
+        {
+            var query = await GetQueryAsync(searchDto);
+
+            if (query == null)
+                return new List<SourceTableListDto>();
+
+            return _mapper.Map<List<SourceTableListDto>>(query.Select(x => x.FkSourceTableNavigation).Distinct().ToList());
+        }
+
 
         private async Task<AgentReportDto> BindReportAsync(List<CallDisposition> callDispositions)
         {
@@ -167,51 +252,355 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport
 
         public async Task<AgentReportDto> GetReportAsync(SearchDto searchDto)
         {
-            //Prevent Entire DB selects
-            if (string.IsNullOrEmpty(searchDto.Client) && !searchDto.SourceTable.HasValue && !searchDto.Project.HasValue
-                && !searchDto.Agent.HasValue && !searchDto.StartDate.HasValue && !searchDto.EndDate.HasValue)
+            var query = await GetQueryAsync(searchDto);
+
+            if (query == null)
                 return new AgentReportDto();
 
-            //Filter Out Bad Codes
-            var query = _callDispositionContext.CallDispositions
-                .Include(x => x.FkAgentNavigation)
-                .Include(x => x.FkClientNavigation)
-                .Include(x => x.FkFtpfileNavigation)
-                .Include(x => x.FkProjectCodeNavigation)
-                .Include(x => x.FkTermCodeNavigation.FkTermCodeCategoryNavigation)
-                .Where(x => x.FkTermCodeNavigation.Alias != "24 BUSY Busy Signal"
-                    && x.FkTermCodeNavigation.Alias != "55 ANSM Answering Machine Hangup"
-                    && x.FkTermCodeNavigation.Alias != "66 GENCB Dead Air"
-                    && x.FkTermCodeNavigation.Alias != "66 GENCB No Answer"
-                    && x.FkTermCodeNavigation.Alias != "67 PUBCB Global Callback"
-                    && x.FkTermCodeNavigation.Alias != "99 PRICB Personal Callback"
-                 );
-
-            query = searchDto.StartDate.HasValue
-                ? query.Where(x => x.FkFtpfileNavigation.LastWriteTime >= searchDto.StartDate)
-                : query;
-
-            query = searchDto.EndDate.HasValue
-                ? query.Where(x => x.FkFtpfileNavigation.LastWriteTime < searchDto.EndDate.Value.AddDays(1))
-                : query;
-
-            query = searchDto.Agent.HasValue
-                ? query.Where(x => x.FkAgent == searchDto.Agent)
-                : query;
-
-            query = searchDto.SourceTable.HasValue
-               ? query.Where(x => x.FkSourceTable == searchDto.SourceTable)
-               : query;
-
-            query = string.IsNullOrEmpty(searchDto.Client)
-               ? query
-               : query.Where(x => x.FkSourceTableNavigation.SourceTable1.Contains(searchDto.Client));
-
-            query = searchDto.Project.HasValue
-                    ? query.Where(x => x.FkProjectCode == searchDto.Project)
-                    : query;
-
             return await BindReportAsync(await query.ToListAsync());
+        }
+
+        public async Task<byte[]> GetReportDownloadAsync(SearchDto searchDto)
+        {
+            var ms = new MemoryStream();
+            var datamodel = await GetReportAsync(searchDto);
+
+            var wb = new XLWorkbook();
+            var dataTable = IEnumerableToDataTable.ToDataTable(datamodel.AgentLines);
+
+            PropertyInfo[] piT = typeof(AgentDetailsDto).GetProperties();
+
+            var dr = dataTable.NewRow();
+
+            foreach (var property in piT)
+                dr[property.Name] = property.GetValue(datamodel.Summary, null);
+
+            dr["AgentID"] = "";
+            dr["AgentName"] = "Totals";
+
+            dataTable.Rows.Add(dr);
+
+            wb.Worksheets.Add(dataTable, "Report");
+
+            var ws = wb.Worksheet("Report");
+
+            ws.Row(ws.RowsUsed().Count()).Cell("B").Style.Font.Bold = true;
+
+            ws.SheetView.FreezeRows(1);
+            ws.SheetView.FreezeColumns(1);
+            ws.SheetView.FreezeColumns(2);
+
+            wb.SaveAs(ms);
+
+            return ms.ToArray();
+        }
+
+        public async Task<byte[]> GetReportDownloadTotalsAsync(SearchDto searchDto)
+        {
+            var ms = new MemoryStream();
+            var projects = await GetProjectCodesAsync(searchDto);
+            
+            var wb = new XLWorkbook();
+
+            var originalProjectValue = searchDto.Project;
+
+            //Get Independent Projects
+            foreach (var project in projects)
+            {
+                searchDto.Project = project.Id;
+
+                var datamodel = await GetReportAsync(searchDto);
+                var dataTable = IEnumerableToDataTable.ToDataTable(datamodel.AgentLines);
+
+                PropertyInfo[] piT = typeof(AgentDetailsDto).GetProperties();
+
+                var dr = dataTable.NewRow();
+
+                foreach (var property in piT)
+                    dr[property.Name] = property.GetValue(datamodel.Summary, null);
+
+                dr["AgentID"] = "";
+                dr["AgentName"] = "Totals";
+
+                dataTable.Rows.Add(dr);
+
+                wb.Worksheets.Add(dataTable, $"_{project.ProjectCode1}");
+
+                var ws = wb.Worksheet($"_{project.ProjectCode1}");
+
+
+                ws.Columns().Hide();
+
+                ws.Column("A").Unhide();
+                ws.Column("B").Unhide();
+                ws.Column("K").Unhide();
+                ws.Column("R").Unhide();
+                ws.Column("AB").Unhide();
+
+                ws.Row(ws.RowsUsed().Count()).Cell("B").Style.Font.Bold = true;
+
+                ws.SheetView.FreezeRows(1);
+                ws.SheetView.FreezeColumns(1);
+                ws.SheetView.FreezeColumns(2);
+            }
+
+            //Get Totals
+            searchDto.Project = originalProjectValue;
+            var datamodelTotals = await GetReportAsync(searchDto);
+
+            var dataTableTotals = IEnumerableToDataTable.ToDataTable(datamodelTotals.AgentLines);
+
+            PropertyInfo[] piTTotals = typeof(AgentDetailsDto).GetProperties();
+
+            var drTotals = dataTableTotals.NewRow();
+
+            foreach (var property in piTTotals)
+                drTotals[property.Name] = property.GetValue(datamodelTotals.Summary, null);
+
+            drTotals["AgentID"] = "";
+            drTotals["AgentName"] = "Totals";
+
+            dataTableTotals.Rows.Add(drTotals);
+
+            wb.Worksheets.Add(dataTableTotals, "Totals");
+
+            var wsTotals = wb.Worksheet("Totals");
+
+            wsTotals.Columns().Hide();
+
+            wsTotals.Column("A").Unhide();
+            wsTotals.Column("B").Unhide();
+            wsTotals.Column("K").Unhide();
+            wsTotals.Column("R").Unhide();
+            wsTotals.Column("AB").Unhide();
+
+            wsTotals.Row(wsTotals.RowsUsed().Count()).Cell("B").Style.Font.Bold = true;
+
+            wsTotals.SheetView.FreezeRows(1);
+            wsTotals.SheetView.FreezeColumns(1);
+            wsTotals.SheetView.FreezeColumns(2);
+
+            wb.SaveAs(ms);
+
+            return ms.ToArray();
+        }
+
+        public async Task<byte[]> GetReportDownloadCompareTotalsAsync(SearchDto searchDto)
+        {
+            var ms = new MemoryStream();
+            var projects = await GetProjectCodesAsync(searchDto);
+            var agents = await GetAgentsAsync(searchDto);
+
+            var wb = new XLWorkbook();
+
+            var originalProjectValue = searchDto.Project;
+
+            var columnCount = 2;
+
+            wb.Worksheets.Add("All Compare");
+            var wsAll = wb.Worksheet("All Compare");
+
+            //Get All Compare
+            foreach (var project in projects)
+            {
+                var rowcount = 1;
+
+                searchDto.Project = project.Id;
+
+                var datamodel = await GetReportAsync(searchDto);
+
+                //Add Extra Agents
+                foreach (var agent in agents)
+                {
+                    if (!datamodel.AgentLines.Where(x => string.Compare(x.AgentID, agent.AgentId.ToString(), true) == 0).Any())
+                    {
+                        datamodel.AgentLines.Add(new AgentDetailsDto
+                        {
+                            AgentID = agent.AgentId.ToString(),
+                            AgentName = agent.AgentName,
+                            PacRate = 0,
+                            OtgRate = 0,
+                            MupRate = 0
+                        });
+                    }
+                }
+
+                //Sort
+                datamodel.AgentLines = datamodel.AgentLines.OrderBy(x => x.AgentName).ToList();
+
+                wsAll.Cell(rowcount, columnCount).Value = project.ProjectCode1;
+
+                //Agent
+                rowcount += 1;
+
+                wsAll.Cell(rowcount, columnCount).Value = "AgentName";
+
+                rowcount += 1;
+
+                foreach (var row in datamodel.AgentLines)
+                {
+                    wsAll.Cell(rowcount, columnCount).Value = row.AgentName;
+
+                    rowcount += 1;
+                }
+
+                //Pac Rate
+                columnCount += 1;
+                rowcount = 2;
+
+                wsAll.Cell(rowcount, columnCount).Value = "PacRate";
+
+                rowcount += 1;
+
+                foreach (var row in datamodel.AgentLines)
+                {
+                    wsAll.Cell(rowcount, columnCount).Value = row.PacRate;
+
+                    rowcount += 1;
+                }
+
+                //OTG Rate
+                columnCount += 1;
+                rowcount = 2;
+
+                wsAll.Cell(rowcount, columnCount).Value = "OTGRate";
+
+                rowcount += 1;
+
+                foreach (var row in datamodel.AgentLines)
+                {
+                    wsAll.Cell(rowcount, columnCount).Value = row.OtgRate;
+                    rowcount += 1;
+                }
+
+                //MUP Rate
+                columnCount += 1;
+                rowcount = 2;
+
+                wsAll.Cell(rowcount, columnCount).Value = "MUPRate";
+
+                rowcount += 1;
+
+                foreach (var row in datamodel.AgentLines)
+                {
+                    wsAll.Cell(rowcount, columnCount).Value = row.MupRate;
+                    rowcount += 1;
+                }
+
+                columnCount += 2;
+            }
+
+            //Reset Project Filter
+            searchDto.Project = originalProjectValue;
+
+            //Get Per SourceTable
+            var sourceTables = await GetSourceTableAsync(searchDto);
+
+            foreach (var sourceTable in sourceTables)
+            {
+                //Set Filters
+                searchDto.SourceTable = sourceTable.Id;
+                searchDto.Project = originalProjectValue;
+
+                var sourceTableProject = await GetProjectCodesAsync(searchDto);
+
+                columnCount = 2;
+
+                wb.Worksheets.Add($"_{sourceTable.SourceTable1} Compare");
+                var wsProject = wb.Worksheet($"_{sourceTable.SourceTable1} Compare");
+
+                //Get Project Compare
+                foreach (var project in sourceTableProject)
+                {
+                    var rowcount = 1;
+
+                    searchDto.Project = project.Id;
+
+                    var datamodel = await GetReportAsync(searchDto);
+
+                    //Add Extra Agents
+                    foreach (var agent in agents)
+                    {
+                        if (!datamodel.AgentLines.Where(x => string.Compare(x.AgentID, agent.AgentId.ToString(), true) == 0).Any())
+                        {
+                            datamodel.AgentLines.Add(new AgentDetailsDto
+                            {
+                                AgentID = agent.AgentId.ToString(),
+                                AgentName = agent.AgentName,
+                                PacRate = 0,
+                                OtgRate = 0,
+                                MupRate = 0
+                            });
+                        }
+                    }
+
+                    //Sort
+                    datamodel.AgentLines = datamodel.AgentLines.OrderBy(x => x.AgentName).ToList();
+
+                    wsProject.Cell(rowcount, columnCount).Value = project.ProjectCode1;
+
+                    //Agent
+                    rowcount += 1;
+
+                    wsProject.Cell(rowcount, columnCount).Value = "AgentName";
+
+                    rowcount += 1;
+
+                    foreach (var row in datamodel.AgentLines)
+                    {
+                        wsProject.Cell(rowcount, columnCount).Value = row.AgentName;
+                        rowcount += 1;
+                    }
+
+                    //Pac Rate
+                    columnCount += 1;
+                    rowcount = 2;
+
+                    wsProject.Cell(rowcount, columnCount).Value = "PacRate";
+
+                    rowcount += 1;
+
+                    foreach (var row in datamodel.AgentLines)
+                    {
+                        wsProject.Cell(rowcount, columnCount).Value = row.PacRate;
+                        rowcount += 1;
+                    }
+
+                    //OTG Rate
+                    columnCount += 1;
+                    rowcount = 2;
+
+                    wsProject.Cell(rowcount, columnCount).Value = "OTGRate";
+
+                    rowcount += 1;
+
+                    foreach (var row in datamodel.AgentLines)
+                    {
+                        wsProject.Cell(rowcount, columnCount).Value = row.OtgRate;
+                        rowcount += 1;
+                    }
+
+                    //MUP Rate
+                    columnCount += 1;
+                    rowcount = 2;
+
+                    wsProject.Cell(rowcount, columnCount).Value = "MUPRate";
+
+                    rowcount += 1;
+
+                    foreach (var row in datamodel.AgentLines)
+                    {
+                        wsProject.Cell(rowcount, columnCount).Value = row.MupRate;
+                        rowcount += 1;
+                    }
+
+                    columnCount += 2;
+                }
+            }
+
+            wb.SaveAs(ms);
+
+            return ms.ToArray();
         }
     }
 }
