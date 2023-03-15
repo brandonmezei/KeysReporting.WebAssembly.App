@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using KeysReporting.WebAssembly.App.Server.Data;
+using KeysReporting.WebAssembly.App.Shared.ApiError;
 using KeysReporting.WebAssembly.App.Shared.CPH;
 using KeysReporting.WebAssembly.App.Shared.Lists;
 using KeysReporting.WebAssembly.App.Shared.TermCodes;
@@ -48,6 +49,9 @@ namespace KeysReporting.WebAssembly.App.Server.Configurations
                  .ForMember(x => x.FkProjectCode, q => q
                     .MapFrom(mapper => mapper.ProjectID))
                 ;
+
+            //ApiError
+            CreateMap<Apierror, ApiErrorDto>();
         }
     }
 }
