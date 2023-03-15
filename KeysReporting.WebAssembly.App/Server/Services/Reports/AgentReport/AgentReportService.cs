@@ -23,7 +23,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport
         private async Task<IQueryable<CallDisposition>> GetQueryAsync(SearchDto searchDto)
         {
             //Prevent Entire DB selects
-            if (string.IsNullOrEmpty(searchDto.Client) && !searchDto.SourceTable.HasValue && !searchDto.Project.HasValue
+            if (string.IsNullOrEmpty(searchDto.Client) && !searchDto.SourceTable.HasValue && (searchDto.Project == null || !searchDto.Project.Any())
                 && !searchDto.Agent.HasValue && !searchDto.StartDate.HasValue && !searchDto.EndDate.HasValue)
                 return null;
 
@@ -63,9 +63,13 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport
                ? query
                : query.Where(x => x.FkSourceTableNavigation.SourceTable1.ToLower() == searchDto.Client.ToLower());
 
-            query = searchDto.Project.HasValue
-                    ? query.Where(x => x.FkProjectCode == searchDto.Project)
-                    : query;
+            query = searchDto.Project != null && searchDto.Project.Any()
+                ? query.Where(x => searchDto.Project.Any(c => c == x.FkProjectCode))
+                : query;
+
+            //if(searchDto.Project != null && searchDto.Project.Any())
+            //    foreach(var project in searchDto.Project)
+            //        query = query.Where(x => x.FkProjectCode.CompareTo(searchDto.Project))
 
             return query;
         }
@@ -307,7 +311,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport
             //Get Independent Projects
             foreach (var project in projects)
             {
-                searchDto.Project = project.Id;
+                searchDto.Project = new List<long> { project.Id };
 
                 var datamodel = await GetReportAsync(searchDto);
                 var dataTable = IEnumerableToDataTable.ToDataTable(datamodel.AgentLines);
@@ -405,7 +409,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport
             {
                 var rowcount = 1;
 
-                searchDto.Project = project.Id;
+                searchDto.Project = new List<long> { project.Id };
 
                 var datamodel = await GetReportAsync(searchDto);
 
@@ -514,7 +518,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.Reports.AgentReport
                 {
                     var rowcount = 1;
 
-                    searchDto.Project = project.Id;
+                    searchDto.Project = new List<long> { project.Id };
 
                     var datamodel = await GetReportAsync(searchDto);
 

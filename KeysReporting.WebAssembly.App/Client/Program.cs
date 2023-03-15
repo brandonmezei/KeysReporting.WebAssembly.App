@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using KeysReporting.WebAssembly.App.Client;
 using KeysReporting.WebAssembly.App.Client.Providers;
 using KeysReporting.WebAssembly.App.Client.Services.Agent;
+using KeysReporting.WebAssembly.App.Client.Services.ApiError;
 using KeysReporting.WebAssembly.App.Client.Services.Auth;
 using KeysReporting.WebAssembly.App.Client.Services.Base;
 using KeysReporting.WebAssembly.App.Client.Services.CPH;
@@ -35,5 +36,6 @@ builder.Services.AddScoped<IAgentService, AgentService>();
 builder.Services.AddScoped<IAgentReportService, AgentReportService>();
 builder.Services.AddScoped<ITermCodeService, TermCodeService>();
 builder.Services.AddScoped<ITermCodeListService, TermCodeListService>();
+builder.Services.AddScoped<IApiErrorService, ApiErrorService>();
 
 await builder.Build().RunAsync();

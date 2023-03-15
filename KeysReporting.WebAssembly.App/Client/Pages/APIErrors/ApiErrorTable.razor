@@ -1,0 +1,16 @@
+﻿<table class="table is-striped is-fullwidth" style="font-size:14px">
+    <thead>
+        <tr>
+            <td>Message</td>
+            <td>Time</td>
+        </tr>
+    </thead>
+    <tbody>
+        <Virtualize ItemsProvider="LoadApiError" Context="ApiErrors">
+            <tr>
+                <td>@ApiErrors.Apierror1</td>
+                <td>@ApiErrors.SystemTime</td>              
+            </tr>
+        </Virtualize>
+    </tbody>
+</table>

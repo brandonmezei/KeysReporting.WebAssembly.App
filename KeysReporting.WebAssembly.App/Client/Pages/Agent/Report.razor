@@ -48,7 +48,7 @@
                                             <option value="">-- Campaign --</option>
                                             @foreach (var item in _projectTable)
                                             {
-                                                if (_search.Project.HasValue && _search.Project.Value == item.Id)
+                                                if (_search.Project != null && _search.Project.Any() && _search.Project.FirstOrDefault() == item.Id)
                                                 {
                                                     <option value="@item.Id" selected="selected">@item.ProjectCode1</option>
                                                 }

@@ -178,7 +178,7 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
             {
                 _search.Project = string.IsNullOrEmpty(e.Value.ToString())
                     ? null
-                    : long.Parse(e.Value.ToString());
+                    : new List<long>() { long.Parse(e.Value.ToString()) };
             }
             catch
             {

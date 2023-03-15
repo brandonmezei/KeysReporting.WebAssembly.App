@@ -1,22 +1,37 @@
 ﻿using KeysReporting.WebAssembly.App.Shared.VirtualResponse;
 using KeysReporting.WebAssembly.App.Server.Data;
-using KeysReporting.WebAssembly.App.Server.Services.VirtualResponse;
 using KeysReporting.WebAssembly.App.Shared.ApiError;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper.QueryableExtensions;
 
 namespace KeysReporting.WebAssembly.App.Server.Services.Reports.ApiErrors
 {
     public class ApiErrorService : IApiErrorService
     {
-        private readonly IVirtualResponseService<Apierror> _virtualResponseService;
-        
-        public ApiErrorService(IVirtualResponseService<Apierror> virtualResponseService)
+        public readonly CallDispositionContext _callDispositionContext;
+        private readonly IMapper _mapper;
+
+        public ApiErrorService(CallDispositionContext callDispositionContext, IMapper mapper)
         {
-            _virtualResponseService = virtualResponseService;
+            _callDispositionContext = callDispositionContext;
+            _mapper = mapper;
         }
 
-        public Task<VirtualResponseDto<ApiErrorDto>> GetApiErrorsAsync(QueryParamDto queryParm)
+        public async Task<VirtualResponseDto<ApiErrorDto>> GetApiErrorsAsync(QueryParamDto queryParm)
         {
-            return _virtualResponseService.GetAllAsync<ApiErrorDto>(queryParm);
+
+            var totalSize = await _callDispositionContext.Apierrors               
+                .CountAsync();
+
+            var items = await _callDispositionContext.Apierrors
+                .OrderByDescending(x => x.Id)
+                .Skip(queryParm.StartIndex)
+                .Take(queryParm.PageSize)
+                .ProjectTo<ApiErrorDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            return new VirtualResponseDto<ApiErrorDto> { Items = items, TotalSize = totalSize };
         }
     }
 }
