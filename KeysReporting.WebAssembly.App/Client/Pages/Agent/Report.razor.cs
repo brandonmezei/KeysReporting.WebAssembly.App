@@ -39,12 +39,14 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
         private List<SourceTableListDto> _sourceTables = new();
         private List<ProjectListDto> _projectTable = new();
         private List<AgentListDto> _agentTable = new();
-
+        private List<ProjectListDto> _multiProject = new();
 
         public string? _buttonClass;
         public string? _errorMessage;
         public string? _loadingMessage;
         public string? _warnMessage;
+
+        public bool _multiCamp;
 
         protected override async Task OnInitializedAsync()
         {
@@ -76,6 +78,9 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
 
             try
             {
+                if (_multiProject.Any())
+                    _search.Project = _multiProject.Select(x => x.Id).ToList();
+
                 _agentReport = await AgentReportService.GetAgentReportAsync(_search);
 
                 _warnMessage = _agentReport.AgentLines.Any()
@@ -193,6 +198,45 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.Agent
                 _search.Agent = string.IsNullOrEmpty(e.Value.ToString())
                     ? null
                     : long.Parse(e.Value.ToString());
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+        }
+
+        private void ToggleMulti()
+        {
+            _multiCamp = !_multiCamp;
+        }
+
+        private void HandleMultiProjectChange(ChangeEventArgs e)
+        {
+            try
+            {
+
+                long? projectId = string.IsNullOrEmpty(e.Value.ToString())
+                    ? null
+                    : long.Parse(e.Value.ToString());
+
+                if(projectId != null)
+                {
+                    if (!_multiProject.Where(x => x.Id == projectId).Any() && _projectTable.Where(x => x.Id == projectId).Any())
+                        _multiProject.Add(_projectTable.Where(x => x.Id == projectId).FirstOrDefault());
+                }
+            }
+            catch
+            {
+                _errorMessage = Messages.SomethingWentWrong;
+            }
+        }
+
+        private void RemoveMultiProject(long? id)
+        {
+            try
+            {
+                if (_multiProject.Where(x => x.Id == id).Any())
+                    _multiProject.Remove(_multiProject.Where(x => x.Id == id).FirstOrDefault());
             }
             catch
             {

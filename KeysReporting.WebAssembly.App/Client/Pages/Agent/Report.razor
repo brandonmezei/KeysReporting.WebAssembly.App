@@ -6,6 +6,57 @@
 <WarnMessage Message="@_warnMessage" />
 
 <section class="section">
+    @if (_multiCamp)
+    {
+        <div class="modal is-active">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Multi-Campaign Filter</p>
+                    <div class="delete" aria-label="close" @onclick=@(() => ToggleMulti())></div>
+                </header>
+                <section class="modal-card-body">
+                    <div class="field">
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select class="form-select" @onchange="HandleMultiProjectChange">
+                                    <option value="">-- Campaign --</option>
+                                    @foreach (var item in _projectTable.Where(x => !_multiProject.Where(s => s.Id == x.Id).Any()))
+                                    {
+                                        <option value="@item.Id">@item.ProjectCode1</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    @if(_multiProject.Any())
+                    {
+                        <hr />
+                        <table class="table is-striped is-fullwidth">
+                            <thead>
+                                <tr>
+                                    <td></td>
+                                    <td>Campaign</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(var line in _multiProject)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a @onclick=@(() => RemoveMultiProject(line.Id))><span class="material-icons">delete</span></a>
+                                        </td>
+                                        <td>@line.ProjectCode1</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </section>
+            </div>
+        </div>
+    }
+
     <div class="columns is-centered">
         <div class="column @(_agentReport != null && _agentReport.AgentLines.Any() ? "is-3" : "is-4")">
             <div class="tile is-ancestor">
@@ -43,22 +94,29 @@
                             </div>
                             <div class="field">
                                 <div class="control">
-                                    <div class="select is-fullwidth">
-                                        <select class="form-select" @onchange="HandleProjectChange">
-                                            <option value="">-- Campaign --</option>
-                                            @foreach (var item in _projectTable)
-                                            {
-                                                if (_search.Project != null && _search.Project.Any() && _search.Project.FirstOrDefault() == item.Id)
+                                    @if (!_multiProject.Any())
+                                    {
+                                        <div class="select is-fullwidth">
+                                            <select class="form-select" @onchange="HandleProjectChange">
+                                                <option value="">-- Campaign --</option>
+                                                @foreach (var item in _projectTable)
                                                 {
-                                                    <option value="@item.Id" selected="selected">@item.ProjectCode1</option>
+                                                    if (_search.Project != null && _search.Project.Any() && _search.Project.FirstOrDefault() == item.Id)
+                                                    {
+                                                        <option value="@item.Id" selected="selected">@item.ProjectCode1</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Id">@item.ProjectCode1</option>
+                                                    }
                                                 }
-                                                else
-                                                {
-                                                    <option value="@item.Id">@item.ProjectCode1</option>
-                                                }
-                                            }
-                                        </select>
-                                    </div>
+                                            </select>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" readonly="readonly" class="input" value="Multi-Campaign Selected">
+                                    }
                                 </div>
                             </div>
                             <div class="field">
@@ -98,9 +156,13 @@
                             <hr />
                             <div class="buttons">
                                 <button type="submit" class="button is-primary @_buttonClass">Search</button>
-                                <a class="button is-success @_buttonClass" @onclick=@(() => HandleDownloadReport())>Download</a>
-                                <a class="button is-danger @_buttonClass" @onclick=@(() => HandleDownloadTotalReport())>Totals</a>
-                                <a class="button is-dark @_buttonClass" @onclick=@(() => HandleDownloadCompareTotalReport())>Totals Compare</a>
+                                <a class="button is-warning @_buttonClass" @onclick=@(() => ToggleMulti())>Multi-Campaign</a>
+                                @if (_agentReport != null && _agentReport.AgentLines.Any())
+                                {
+                                    <a class="button is-success @_buttonClass" @onclick=@(() => HandleDownloadReport())>Download</a>
+                                    <a class="button is-danger @_buttonClass" @onclick=@(() => HandleDownloadTotalReport())>Totals</a>
+                                    <a class="button is-dark @_buttonClass" @onclick=@(() => HandleDownloadCompareTotalReport())>Totals Compare</a>
+                                }
                             </div>
                         </EditForm>
                     </div>
@@ -165,7 +227,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach(var line in _agentReport.AgentLines)
+                                        @foreach (var line in _agentReport.AgentLines)
                                         {
                                             <tr>
                                                 <td>@line.AgentID</td>
