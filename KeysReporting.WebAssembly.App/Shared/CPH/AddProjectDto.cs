@@ -9,11 +9,9 @@ namespace KeysReporting.WebAssembly.App.Shared.CPH
 {
     public class AddProjectDto
     {
-        private DateTime _ReportDate;
-
         [Required]
         [DataType(DataType.Date)]
-        public DateTime ReportDate { get { return _ReportDate; } set { _ReportDate = value.Date; } }
+        public DateTime? ReportDate { get; set; }
 
         [Required]
         [StringLength(255)]

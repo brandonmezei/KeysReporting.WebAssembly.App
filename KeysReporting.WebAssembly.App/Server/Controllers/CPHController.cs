@@ -120,7 +120,7 @@ namespace KeysReporting.WebAssembly.App.Server.Controllers
                 var response = await _CPHReport.GetAllCPHAsync(searchDto);
 
                 if (response != null)
-                    return Ok(new ServiceFileDto() { Name = $"CPHReport_{ searchDto.SearchDate.ToString("MMddyyyy") }.xlsx", Content = response } );
+                    return Ok(new ServiceFileDto() { Name = $"CPHReport_{ searchDto.SearchDate.Value.ToString("MMddyyyy") }.xlsx", Content = response } );
                
                 return Ok();
             }

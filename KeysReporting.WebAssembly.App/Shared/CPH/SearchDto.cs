@@ -10,11 +10,9 @@ namespace KeysReporting.WebAssembly.App.Shared.CPH
 {
     public class SearchDto
     {
-        private DateTime _SearchDate;
-
         [Required]
         [DataType(DataType.Date)]
-        public DateTime SearchDate { get { return _SearchDate;  } set { _SearchDate = value.Date; } }
+        public DateTime? SearchDate { get; set; }
 
         public long? ProjectID { get; set; }
     }

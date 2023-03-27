@@ -139,7 +139,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.CPHReport
         public async Task<CPHReportDto> GetReportAsync(SearchDto searchDto)
         {
 
-            await CreateHeader(searchDto.SearchDate);
+            await CreateHeader(searchDto.SearchDate.Value);
 
             var dbModelHead = await _callDispositionContext.Cphheaders
                 .Include(x => x.CphprojectControls.Where(i => i.FkProjectCode == searchDto.ProjectID))
@@ -174,7 +174,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.CPHReport
 
         public async Task<ProjectListDto> CreateNewProjectAsync(AddProjectDto addProjectDto)
         {
-            await CreateHeader(addProjectDto.ReportDate);
+            await CreateHeader(addProjectDto.ReportDate.Value);
 
             var report = await _callDispositionContext.Cphheaders
                 .Include(x => x.CphprojectControls)
@@ -295,9 +295,9 @@ namespace KeysReporting.WebAssembly.App.Server.Services.CPHReport
         {
             var report = new List<CPHReportDto>();
 
-            await CreateHeader(searchDto.SearchDate);
+            await CreateHeader(searchDto.SearchDate.Value);
 
-            var projectList = await GetProjectListAsync(searchDto.SearchDate);
+            var projectList = await GetProjectListAsync(searchDto.SearchDate.Value);
 
             if (projectList == null || !projectList.Any())
                 return null;

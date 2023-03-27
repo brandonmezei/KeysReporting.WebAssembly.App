@@ -8,11 +8,13 @@ public partial class CallDispositionContext : DbContext
 {
     public CallDispositionContext()
     {
+        this.Database.SetCommandTimeout(300);
     }
 
     public CallDispositionContext(DbContextOptions<CallDispositionContext> options)
         : base(options)
     {
+        this.Database.SetCommandTimeout(300);
     }
 
     public virtual DbSet<Agent> Agents { get; set; }
@@ -45,9 +47,14 @@ public partial class CallDispositionContext : DbContext
 
     public virtual DbSet<TermCodeCategory> TermCodeCategories { get; set; }
 
+#if DEBUG
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("name=DBTest");
 
+#else
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("name=DB");
+#endif
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Agent>(entity =>

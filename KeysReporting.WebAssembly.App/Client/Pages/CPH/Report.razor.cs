@@ -25,7 +25,7 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.CPH
         [Inject]
         private IJSRuntime JS { get; set; }
 
-        private SearchDto _search = new() { SearchDate = DateTime.Today };
+        private SearchDto _search = new();
         private CPHReportDto _reportResponse;
         private List<ProjectListDto> _projectList = new();
         private AddProjectDto _addNewProject = new();
@@ -48,11 +48,11 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.CPH
             if (!await AuthService.CheckLogin())
                 NavManager.NavigateTo("/");
 
-            if (_firstLoad)
-            {
-                _firstLoad = false;
-                await HandleSearch();
-            }
+            //if (_firstLoad)
+            //{
+            //    _firstLoad = false;
+            //    await HandleSearch();
+            //}
         }
 
         private async Task BindReport()
@@ -84,6 +84,7 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.CPH
             _buttonClass = CSSClasses.ButtonSpin;
             _loadingMessage = Messages.LoadingProjects;
             _errorMessage = string.Empty;
+            _firstLoad = false;
 
             _reportResponse = null;
             _projectList = new();
@@ -92,7 +93,7 @@ namespace KeysReporting.WebAssembly.App.Client.Pages.CPH
             try
             {
                 //Load Project Dropdown
-                var projectReponse = await ReportService.GetProjectListAsync(_search.SearchDate);
+                var projectReponse = await ReportService.GetProjectListAsync(_search.SearchDate.Value);
 
                 if (projectReponse != null)
                     _projectList = projectReponse;
