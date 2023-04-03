@@ -83,7 +83,7 @@ namespace KeysReporting.WebAssembly.App.Server.Services.LiveVoxAPI
                     issuer: _configuration["JwtSettings:Issuer"],
                     audience: _configuration["JwtSettings:Audience"],
                     claims: claims,
-                    expires: DateTime.Now.AddDays(Convert.ToInt32(_configuration["JwtSettings:Duration"])),
+                    expires: DateTime.Now.AddDays(Convert.ToInt32(_configuration["JwtSettings:DurationDays"])),
                     signingCredentials: credentials
                 );
 
