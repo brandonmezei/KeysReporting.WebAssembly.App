@@ -3,6 +3,8 @@
 @code {
     protected override void OnInitialized()
     {
-        Nav.NavigateTo("/");
+        //Redirect if not External
+        if (!Nav.Uri.ToLower().Contains("quote"))
+            Nav.NavigateTo("/");
     }
 }

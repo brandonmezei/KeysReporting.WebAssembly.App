@@ -1,0 +1,422 @@
+﻿@page "/Quote/Calculator"
+@inject IJSRuntime js;
+
+<PageTitle>Keys360 Reporting - Quote and Projections</PageTitle>
+<PageDisplayTitle Title="CPH Report" Sub="Quote and Projections" />
+<ErrorMessage Message="@_errorMessage" />
+<LoadingMessage Message="@_loadingMessage" />
+
+<section class="section">
+
+    @if (_removeID.HasValue)
+    {
+        <div class="modal is-active">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Remove Campaign: @_calculatorDto.CampaignLines.Where(x => x.ID == _removeID).FirstOrDefault().Campaign</p>
+                    <div class="delete" aria-label="close" @onclick=@(() => ToggleRemove(null))></div>
+                </header>
+                <section class="modal-card-body">
+                    <p class="subtitle">Are you sure you want to remove <b>@_calculatorDto.CampaignLines.Where(x => x.ID == _removeID).FirstOrDefault().Campaign</b>?</p>
+                </section>
+                <footer class="modal-card-foot">
+                    <div class="buttons">
+                        <div class="button is-danger @_buttonClass" @onclick=@(() => ToggleRemove(null))>No</div>
+                        <div class="button is-success @_buttonClass" @onclick=@(() => RemoveCampaign(_removeID))>Yes</div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    }
+
+    <div class="box">
+        <div class="tabs is-boxed is-medium">
+            <ul>
+                <li class="@(_section == 0 ? "is-active" : string.Empty)" @onclick=@(() => ToggleSection(0))><a><span class="material-icons" style="font-size:36px">people</span><span style="padding-left:5px">Account</span></a></li>
+                <li class="@(_section == 1 ? "is-active" : string.Empty)" @onclick=@(() => ToggleSection(1))><a><span class="material-icons" style="font-size:36px">campaign</span><span style="padding-left:5px">Campaigns</span></a></li>
+                <li class="@(_section == 2 ? "is-active" : string.Empty)" @onclick=@(() => ToggleSection(2))><a><span class="material-icons" style="font-size:36px">summarize</span><span style="padding-left:5px">Campaign Summary</span></a></li>
+            </ul>
+        </div>
+        @if (_section == 0)
+        {
+            <div class="columns">
+                <div class="column is-4">
+                    <div class="tile is-ancestor">
+                        <div class="tile is-parent">
+                            <div class="tile is-child box">
+                                <p class="title">Information</p>
+                                <div class="field">
+                                    <label class="heading">Organization</label>
+                                    <div class="control">
+                                        <InputText class="input is-primary" @bind-Value="_calculatorDto.ClientName"></InputText>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="control">
+                                        <label class="heading">Year</label>
+                                        <div class="select is-fullwidth is-primary">
+                                            <select class="form-select" @onchange="HandleYearChange">
+                                                <option value="">-- Select Year --</option>
+                                                @for (int i = 0; i < 10; i++)
+                                                {
+                                                    if ((DateTime.Now.Year + i) == _calculatorDto.Year)
+                                                    {
+                                                        <option value="@(DateTime.Now.Year + i)" selected="selected">
+                                                            @(
+                                                                DateTime.Now.Year + i
+                                                                )
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@(DateTime.Now.Year + i)">
+                                                            @(
+                                                                DateTime.Now.Year + i
+                                                                )
+                                                        </option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="tile is-ancestor">
+                        <div class="tile is-parent">
+                            <div class="tile is-child box">
+                                <p class="title">Campaign Cost</p>
+                                <div class="field">
+                                    <label class="heading">Set Up Fees</label>
+                                    <div class="control">
+                                        <InputNumber class="input is-primary" @bind-Value="_calculatorDto.BreakDown.SetUpFees"></InputNumber>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">Phone Append</label>
+                                    <div class="control">
+                                        <InputNumber class="input is-primary" @bind-Value="_calculatorDto.BreakDown.PhoneAppend"></InputNumber>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">Cost For Test Administration</label>
+                                    <div class="control">
+                                        <InputNumber class="input is-primary" @bind-Value="_calculatorDto.BreakDown.CostOfAdmin"></InputNumber>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">13% HST</label>
+                                    <div class="control">
+                                        <input class="input" readonly="readonly" value="@((decimal)0.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">Total Cost</label>
+                                    <div class="control">
+                                        <input class="input" readonly="readonly" value="@((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))" />
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="field">
+                                    <label class="heading">Cost Per Monthly Donor</label>
+                                    <div class="control">
+                                        <input class="input" readonly="readonly" value="@(
+                                            _calculatorDto.CampaignLines.Any() && _calculatorDto.CampaignLines.Sum(x => x.PACGifts) > 0 
+                                                ? (((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)) - _calculatorDto.CampaignLines.Sum(x =>  x.OTGRevenue)) / _calculatorDto.CampaignLines.Sum(x => x.PACGifts))
+                                                : 0)" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="tile is-ancestor">
+                        <div class="tile is-parent">
+                            <div class="tile is-child box">
+                                <p class="title">Campaign Revenue</p>
+                                <div class="field">
+                                    <label class="heading">1 Year Gross Revenue</label>
+                                    <div class="control">
+                                        <input class="input" readonly="readonly" value="@((_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.OTGRevenue) + _calculatorDto.CampaignLines.Sum(x => x.PAC1Year) + _calculatorDto.CampaignLines.Sum(x => x.MailRevenue) : 0))" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">Campaign Cost</label>
+                                    <div class="control">
+                                        <input class="input" readonly="readonly" value="@((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">1 Year Net Revenue</label>
+                                    <div class="control">
+                                        <input class="input" readonly="readonly" value="@((_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.OTGRevenue) + _calculatorDto.CampaignLines.Sum(x => x.PAC1Year) + _calculatorDto.CampaignLines.Sum(x => x.MailRevenue) : 0) - ((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0))))" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="heading">5 Year Net Revenue</label>
+                                    <div class="control">
+                                        <input class="input" readonly="readonly" value="@( (decimal) 5 * ((_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.OTGRevenue) + _calculatorDto.CampaignLines.Sum(x => x.PAC1Year) + _calculatorDto.CampaignLines.Sum(x => x.MailRevenue) : 0) - ((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))))" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (_section == 1)
+        {
+            @foreach (var line in _calculatorDto.CampaignLines)
+            {
+                <div class="columns">
+                    <div class="column is-12">
+                        <div class="tile is-ancestor">
+                            <div class="tile is-parent">
+                                <div class="tile is-child box">
+                                    <div class="columns">
+                                        <div class="column is-4">
+                                            <div class="field">
+                                                <label class="heading">Campaign</label>
+                                                <div class="control">
+                                                    <InputText class="input is-primary" @bind-Value="line.Campaign"></InputText>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column">
+                                            <div class="buttons is-pulled-right">
+                                                @if (_calculatorDto.CampaignLines.Count() > 1)
+                                                {
+                                                    <div class="button is-danger @_buttonClass" @onclick=@(() => ToggleRemove(@line.ID))>Remove</div>
+                                                }
+                                                <div class="button is-success @_buttonClass" @onclick=@(() => HandleAddCampaign())>Add</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="heading">Target Audience</label>
+                                        <div class="control">
+                                            <InputText class="input is-primary" @bind-Value="line.TargetAudience"></InputText>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="columns">
+                                        <div class="column is-3">
+                                            <div class="box">
+                                                <p class="title">Campaign</p>
+                                                <div class="field">
+                                                    <label class="heading">Gross Names</label>
+                                                    <div class="control">
+                                                        <InputNumber class="input is-primary" @bind-Value="line.GrossNames"></InputNumber>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="field">
+                                                    <label class="heading">Completed Calls</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.CompleteCalls" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">Calling Hours</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.CallingHours" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">Campaign Cost</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.CampaignCost" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-3">
+                                            <div class="box">
+                                                <p class="title">OTG</p>
+                                                <div class="field">
+                                                    <label class="heading">Response(%)</label>
+                                                    <div class="control">
+                                                        <InputNumber class="input is-primary" @bind-Value="line.OTGResponse"></InputNumber>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">Average Gift</label>
+                                                    <div class="control">
+                                                        <InputNumber class="input is-primary" @bind-Value="line.OTGAvg"></InputNumber>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="field">
+                                                    <label class="heading">Donors</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.OTGDonors" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">Revenue</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.OTGRevenue" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-3">
+                                            <div class="box">
+                                                <p class="title">Pac</p>
+                                                <div class="field">
+                                                    <label class="heading">Response(%)</label>
+                                                    <div class="control">
+                                                        <InputNumber class="input is-primary" @bind-Value="line.PACResponse"></InputNumber>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">Average Gift</label>
+                                                    <div class="control">
+                                                        <InputNumber class="input is-primary" @bind-Value="line.PACAVGGift"></InputNumber>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="field">
+                                                    <label class="heading">Gifts</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.PACGifts" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">Monthly Revenue</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.PACMonthly" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">1 Year Revenue</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.PAC1Year" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-3">
+                                            <div class="box">
+                                                <p class="title">Mail</p>
+                                                <div class="field">
+                                                    <label class="heading">Response(%)</label>
+                                                    <div class="control">
+                                                        <InputNumber class="input is-primary" @bind-Value="line.MailResponse"></InputNumber>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">Average Gift</label>
+                                                    <div class="control">
+                                                        <InputNumber class="input is-primary" @bind-Value="line.MailAverage"></InputNumber>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="field">
+                                                    <label class="heading">Donors</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.MailDonors" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">Fulfilled</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.MailFulfilled" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="heading">Revenue</label>
+                                                    <div class="control">
+                                                        <input class="input" value="@line.MailRevenue" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else if (_section == 2)
+        {
+            <div class="columns">
+                <div class="column is-12">
+                    <div class="tile is-parent">
+                        <div class="tile is-child box">
+                            <p class="title">Summary</p>
+                            @if (_calculatorDto.CampaignLines.Any())
+                            {
+                                <table class="table is-striped is-bordered is-fullwidth">
+                                    <thead>
+                                        <tr>
+                                            <td>Campaign</td>
+                                            <td>Names</td>
+                                            <td>Calls</td>
+                                            <td>Hours</td>
+                                            <td>Cost</td>
+                                            <td>OTG Donors</td>
+                                            <td>OTG Revenue</td>
+                                            <td>Pac Gifts</td>
+                                            <td>Pac AVG</td>
+                                            <td>Pac Monthly</td>
+                                            <td>Pac Yearly</td>
+                                            <td>Mail Donors</td>
+                                            <td>Mail Fulfilled</td>
+                                            <td>Mail Revenue</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var line in _calculatorDto.CampaignLines)
+                                        {
+                                            <tr>
+                                                <td>@line.Campaign</td>
+                                                <td>@line.GrossNames</td>
+                                                <td>@line.CompleteCalls</td>
+                                                <td>@line.CallingHours</td>
+                                                <td>@line.CampaignCost</td>
+                                                <td>@line.OTGDonors</td>
+                                                <td>@line.OTGRevenue</td>
+                                                <td>@line.PACGifts</td>
+                                                <td>@line.PACAVGGift</td>
+                                                <td>@line.PACMonthly</td>
+                                                <td>@line.PAC1Year</td>
+                                                <td>@line.MailDonors</td>
+                                                <td>@line.MailFulfilled</td>
+                                                <td>@line.MailRevenue</td>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <td><b>Sub Total</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.GrossNames)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.CompleteCalls)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.CallingHours)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.CampaignCost)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.OTGDonors)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.OTGRevenue)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.PACGifts)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.PACAVGGift)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.PACMonthly)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.PAC1Year)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.MailDonors)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.MailFulfilled)</b></td>
+                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.MailRevenue)</b></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+</section>
