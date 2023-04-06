@@ -49,21 +49,33 @@ namespace KeysReporting.WebAssembly.App.Shared.Quote
 
             //Calls
             CompleteCalls = _grossNames.Value * (decimal)0.5;
+            CompleteCalls = CompleteCalls.HasValue ? Math.Round(CompleteCalls.Value) : CompleteCalls;
+
             CallingHours = CompleteCalls.Value / (decimal)5;
+            CallingHours = CallingHours.HasValue ? Math.Round(CallingHours.Value) : CallingHours;
+
             CampaignCost = CallingHours.Value * (decimal)48;
 
             //OTG
             OTGDonors = CompleteCalls * (_oTGResponse / (decimal)100);
+            OTGDonors = OTGDonors.HasValue ? Math.Round(OTGDonors.Value) : OTGDonors;
+
             OTGRevenue = OTGDonors * _OTGAvg;
 
             //PAC
             PACGifts = CompleteCalls * (_PACResponse / (decimal)100);
+            PACGifts = PACGifts.HasValue ? Math.Round(PACGifts.Value) : PACGifts;
+
             PACMonthly = _PACAVGGift * PACGifts;
             PAC1Year = PACMonthly * (decimal)12;
 
             //Mail Average
             MailDonors = CompleteCalls * (_MailResponse / (decimal)100);
+            MailDonors = MailDonors.HasValue ? Math.Round(MailDonors.Value) : MailDonors;
+
             MailFulfilled = MailDonors * (decimal)0.5;
+            MailFulfilled = MailFulfilled.HasValue ? Math.Round(MailFulfilled.Value) : MailFulfilled;
+
             MailRevenue = MailFulfilled * _MailAverage;
         }
 

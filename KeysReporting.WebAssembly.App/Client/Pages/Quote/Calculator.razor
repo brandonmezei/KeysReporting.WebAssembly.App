@@ -2,7 +2,7 @@
 @inject IJSRuntime js;
 
 <PageTitle>Keys360 Reporting - Quote and Projections</PageTitle>
-<PageDisplayTitle Title="CPH Report" Sub="Quote and Projections" />
+<PageDisplayTitle Title="Quote and Projections" Sub="Enter Account Information to Generate a Quote" />
 <ErrorMessage Message="@_errorMessage" />
 <LoadingMessage Message="@_loadingMessage" />
 
@@ -111,23 +111,23 @@
                                 <div class="field">
                                     <label class="heading">13% HST</label>
                                     <div class="control">
-                                        <input class="input" readonly="readonly" value="@((decimal)0.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))" />
+                                        <input class="input" readonly="readonly" value="@(string.Format("{0:C}", ((decimal)0.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))))" />
                                     </div>
                                 </div>
                                 <div class="field">
                                     <label class="heading">Total Cost</label>
                                     <div class="control">
-                                        <input class="input" readonly="readonly" value="@((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))" />
+                                        <input class="input" readonly="readonly" value="@(string.Format("{0:C}", ((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))))" />
                                     </div>
                                 </div>
                                 <hr />
                                 <div class="field">
                                     <label class="heading">Cost Per Monthly Donor</label>
                                     <div class="control">
-                                        <input class="input" readonly="readonly" value="@(
+                                        <input class="input" readonly="readonly" value="@(string.Format("{0:C}", (
                                             _calculatorDto.CampaignLines.Any() && _calculatorDto.CampaignLines.Sum(x => x.PACGifts) > 0 
                                                 ? (((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)) - _calculatorDto.CampaignLines.Sum(x =>  x.OTGRevenue)) / _calculatorDto.CampaignLines.Sum(x => x.PACGifts))
-                                                : 0)" />
+                                                : 0)))" />
                                     </div>
                                 </div>
                             </div>
@@ -142,25 +142,25 @@
                                 <div class="field">
                                     <label class="heading">1 Year Gross Revenue</label>
                                     <div class="control">
-                                        <input class="input" readonly="readonly" value="@((_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.OTGRevenue) + _calculatorDto.CampaignLines.Sum(x => x.PAC1Year) + _calculatorDto.CampaignLines.Sum(x => x.MailRevenue) : 0))" />
+                                        <input class="input" readonly="readonly" value="@(string.Format("{0:C}", ((_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.OTGRevenue) + _calculatorDto.CampaignLines.Sum(x => x.PAC1Year) + _calculatorDto.CampaignLines.Sum(x => x.MailRevenue) : 0))))" />
                                     </div>
                                 </div>
                                 <div class="field">
                                     <label class="heading">Campaign Cost</label>
                                     <div class="control">
-                                        <input class="input" readonly="readonly" value="@((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))" />
+                                        <input class="input" readonly="readonly" value="@(string.Format("{0:C}", ((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))))" />
                                     </div>
                                 </div>
                                 <div class="field">
                                     <label class="heading">1 Year Net Revenue</label>
                                     <div class="control">
-                                        <input class="input" readonly="readonly" value="@((_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.OTGRevenue) + _calculatorDto.CampaignLines.Sum(x => x.PAC1Year) + _calculatorDto.CampaignLines.Sum(x => x.MailRevenue) : 0) - ((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0))))" />
+                                        <input class="input" readonly="readonly" value="@(string.Format("{0:C}", ((_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.OTGRevenue) + _calculatorDto.CampaignLines.Sum(x => x.PAC1Year) + _calculatorDto.CampaignLines.Sum(x => x.MailRevenue) : 0) - ((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0))))))" />
                                     </div>
                                 </div>
                                 <div class="field">
                                     <label class="heading">5 Year Net Revenue</label>
                                     <div class="control">
-                                        <input class="input" readonly="readonly" value="@( (decimal) 5 * ((_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.OTGRevenue) + _calculatorDto.CampaignLines.Sum(x => x.PAC1Year) + _calculatorDto.CampaignLines.Sum(x => x.MailRevenue) : 0) - ((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))))" />
+                                        <input class="input" readonly="readonly" value="@(string.Format("{0:C}", ((decimal) 5 * ((_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.OTGRevenue) + _calculatorDto.CampaignLines.Sum(x => x.PAC1Year) + _calculatorDto.CampaignLines.Sum(x => x.MailRevenue) : 0) - ((decimal)1.13 * ((_calculatorDto.BreakDown.SetUpFees ?? 0) + (_calculatorDto.BreakDown.PhoneAppend ?? 0) + (_calculatorDto.BreakDown.CostOfAdmin ?? 0) + (_calculatorDto.CampaignLines.Any() ? _calculatorDto.CampaignLines.Sum(x => x.CampaignCost) : 0)))))))" />
                                     </div>
                                 </div>
                             </div>
@@ -230,7 +230,7 @@
                                                 <div class="field">
                                                     <label class="heading">Campaign Cost</label>
                                                     <div class="control">
-                                                        <input class="input" value="@line.CampaignCost" readonly="readonly">
+                                                        <input class="input" value="@(string.Format("{0:C}", (line.CampaignCost)))" readonly="readonly">
                                                     </div>
                                                 </div>
                                             </div>
@@ -260,7 +260,7 @@
                                                 <div class="field">
                                                     <label class="heading">Revenue</label>
                                                     <div class="control">
-                                                        <input class="input" value="@line.OTGRevenue" readonly="readonly">
+                                                        <input class="input" value="@(string.Format("{0:C}", (line.OTGRevenue)))" readonly="readonly">
                                                     </div>
                                                 </div>
                                             </div>
@@ -290,13 +290,13 @@
                                                 <div class="field">
                                                     <label class="heading">Monthly Revenue</label>
                                                     <div class="control">
-                                                        <input class="input" value="@line.PACMonthly" readonly="readonly">
+                                                        <input class="input" value="@(string.Format("{0:C}", (line.PACMonthly)))" readonly="readonly">
                                                     </div>
                                                 </div>
                                                 <div class="field">
                                                     <label class="heading">1 Year Revenue</label>
                                                     <div class="control">
-                                                        <input class="input" value="@line.PAC1Year" readonly="readonly">
+                                                        <input class="input" value="@(string.Format("{0:C}", (line.PAC1Year)))" readonly="readonly">
                                                     </div>
                                                 </div>
                                             </div>
@@ -332,7 +332,7 @@
                                                 <div class="field">
                                                     <label class="heading">Revenue</label>
                                                     <div class="control">
-                                                        <input class="input" value="@line.MailRevenue" readonly="readonly">
+                                                        <input class="input" value="@(string.Format("{0:C}", (line.MailRevenue)))" readonly="readonly">
                                                     </div>
                                                 </div>
                                             </div>
@@ -381,16 +381,16 @@
                                                 <td>@line.GrossNames</td>
                                                 <td>@line.CompleteCalls</td>
                                                 <td>@line.CallingHours</td>
-                                                <td>@line.CampaignCost</td>
+                                                <td>@(string.Format("{0:C}", (line.CampaignCost)))</td>
                                                 <td>@line.OTGDonors</td>
-                                                <td>@line.OTGRevenue</td>
+                                                <td>@(string.Format("{0:C}", (line.OTGRevenue)))</td>
                                                 <td>@line.PACGifts</td>
-                                                <td>@line.PACAVGGift</td>
-                                                <td>@line.PACMonthly</td>
-                                                <td>@line.PAC1Year</td>
+                                                <td>@(string.Format("{0:C}", (line.PACAVGGift)))</td>
+                                                <td>@(string.Format("{0:C}", (line.PACMonthly)))</td>
+                                                <td>@(string.Format("{0:C}", (line.PAC1Year)))</td>
                                                 <td>@line.MailDonors</td>
                                                 <td>@line.MailFulfilled</td>
-                                                <td>@line.MailRevenue</td>
+                                                <td>@(string.Format("{0:C}", (line.MailRevenue)))</td>
                                             </tr>
                                         }
                                         <tr>
@@ -398,16 +398,16 @@
                                             <td><b>@_calculatorDto.CampaignLines.Sum(x => x.GrossNames)</b></td>
                                             <td><b>@_calculatorDto.CampaignLines.Sum(x => x.CompleteCalls)</b></td>
                                             <td><b>@_calculatorDto.CampaignLines.Sum(x => x.CallingHours)</b></td>
-                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.CampaignCost)</b></td>
+                                            <td><b>@(string.Format("{0:C}", (_calculatorDto.CampaignLines.Sum(x => x.CampaignCost))))</b></td>
                                             <td><b>@_calculatorDto.CampaignLines.Sum(x => x.OTGDonors)</b></td>
-                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.OTGRevenue)</b></td>
+                                            <td><b>@(string.Format("{0:C}", (_calculatorDto.CampaignLines.Sum(x => x.OTGRevenue))))</b></td>
                                             <td><b>@_calculatorDto.CampaignLines.Sum(x => x.PACGifts)</b></td>
-                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.PACAVGGift)</b></td>
-                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.PACMonthly)</b></td>
-                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.PAC1Year)</b></td>
+                                            <td><b>@(string.Format("{0:C}", (_calculatorDto.CampaignLines.Sum(x => x.PACAVGGift))))</b></td>
+                                            <td><b>@(string.Format("{0:C}", (_calculatorDto.CampaignLines.Sum(x => x.PACMonthly))))</b></td>
+                                            <td><b>@(string.Format("{0:C}", (_calculatorDto.CampaignLines.Sum(x => x.PAC1Year))))</b></td>
                                             <td><b>@_calculatorDto.CampaignLines.Sum(x => x.MailDonors)</b></td>
                                             <td><b>@_calculatorDto.CampaignLines.Sum(x => x.MailFulfilled)</b></td>
-                                            <td><b>@_calculatorDto.CampaignLines.Sum(x => x.MailRevenue)</b></td>
+                                            <td><b>@(string.Format("{0:C}", (_calculatorDto.CampaignLines.Sum(x => x.MailRevenue))))</b></td>
                                         </tr>
                                     </tbody>
                                 </table>
