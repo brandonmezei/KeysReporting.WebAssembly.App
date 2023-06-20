@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext -Connection name=DBTest Microsoft.EntityFrameworkCore.SqlServer -OutputDir Data -force
